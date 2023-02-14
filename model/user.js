@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { isEmail } = require('validator');
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -11,6 +12,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'must provide lastname'],
     trim: true,
+    unique: false,
     maxlength: [20, 'not more than 20 characters']
   },
   emailId: {
@@ -37,11 +39,4 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-//for not showing password in json obj
-// userSchema.methods.toJSON = function() {
-//     var obj = this.toObject();
-//     delete obj.password;
-//     return obj;
-//   }
-
-module.exports = mongoose.model('task', userSchema);
+module.exports = mongoose.model('user', userSchema);

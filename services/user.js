@@ -1,13 +1,4 @@
 const userModel = require('../model/user');
-// const findUser = async(userId)=>{
-//         return await userModel.findOne({ _id: userId });
-//      }
-// const updateuser=async(userId)=>{
-// await userModel.findOneAndUpdate({_id:userId},req.body,{
-//     new:true,
-//     runValidators:true,
-//   })
-// }
 
 class UserService {
   async createUser(userInfo) {
@@ -15,9 +6,7 @@ class UserService {
       if (!userInfo) {
         throw new Error('User details is required');
       }
-
       const savedUser = await userModel.create(userInfo);
-
       if (savedUser) {
         return savedUser;
       } else {
@@ -27,18 +16,17 @@ class UserService {
       throw error;
     }
   }
-  async getUser({ _id: userId }) {
+
+  async getUser(id) {
     try {
-      if (!{ _id: userId }) {
+      if (!id) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel
-        .findOne({ _id: userId })
-        .select('-password');
+      const getUser = await userModel.findOne(id).select('-password');
 
-      if (savedUser) {
-        return savedUser;
+      if (getUser) {
+        return getUser;
       } else {
         return null;
       }
@@ -46,15 +34,16 @@ class UserService {
       throw error;
     }
   }
-  async updateUser({ _id: userId }) {
+
+  async updateUser(id, update, opts) {
     try {
-      if (!{ _id: userId }) {
+      if (!id) {
         throw new Error('User details is required');
       }
+      const updatedUser = await userModel.findOneAndUpdate(id, update, opts);
 
-      const savedUser = await userModel.findOneAndUpdate({ _id: userId });
-      if (savedUser) {
-        return savedUser;
+      if (updatedUser) {
+        return updatedUser;
       } else {
         return null;
       }
@@ -62,16 +51,17 @@ class UserService {
       throw error;
     }
   }
-  async deleteUser({ _id: userId }) {
+
+  async deleteUser(id) {
     try {
-      if (!{ _id: userId }) {
+      if (!id) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel.findOneAndDelete({ _id: userId });
+      const deletedUser = await userModel.findOneAndDelete(id);
 
-      if (savedUser) {
-        return savedUser;
+      if (deletedUser) {
+        return deletedUser;
       } else {
         return null;
       }

@@ -1,7 +1,6 @@
 const UserService = require('../services/user');
 const userModel = require('../model/user');
 let userServiceInstance = new UserService();
-//in this controller/tasks file we are writing all the res.send stuff and importing it in routes/tasks trough getAllTasks obj
 const createUser = async (req, res) => {
   const user = req.body;
   try {
@@ -13,12 +12,10 @@ const createUser = async (req, res) => {
     res.status(500).json({ status: false, message: `error == ${error}` });
     console.log(error);
   }
-  //    res.json(user)
 };
 
 const getUser = async (req, res) => {
   try {
-    // console.log(findUser.toString(), ", = ", req.params)
     const { id: userId } = req.params;
     const user = await userServiceInstance.getUser({ _id: userId });
     if (!user) {
@@ -47,15 +44,14 @@ const updateUser = async (req, res) => {
       }
     );
     if (!user) {
-      return res
-        .status(404)
-        .json({ status: false, message: `no user with id: ${userId}` });
+      return res.status(404).json({ msg: `no task with id: ${userId}` });
     }
     res
       .status(200)
       .json({ status: true, message: 'user updated successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: error });
+    console.log(error);
+    res.status(500).json({ msg: error });
   }
 };
 
@@ -64,7 +60,7 @@ const deleteUser = async (req, res) => {
     const { id: userId } = req.params;
     const user = await userServiceInstance.deleteUser({ _id: userId });
     if (!user) {
-      return res.status(404).json({ msg: `no task with id: ${userId}` });
+      return res.status(404).json({ msg: `no user with id: ${userId}` });
     }
     res
       .status(200)
