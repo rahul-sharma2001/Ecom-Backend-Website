@@ -15,6 +15,7 @@ const createUser = async (req, res) => {
   }
   //    res.json(user)
 };
+
 const getUser = async (req, res) => {
   try {
     // console.log(findUser.toString(), ", = ", req.params)
@@ -33,10 +34,6 @@ const getUser = async (req, res) => {
       .json({ status: false, message: `error ingetUser== ${error}` });
   }
 };
-
-// async function h(userId){
-//    return await userModel.findOne({ _id: userId });
-// }
 
 const updateUser = async (req, res) => {
   try {
@@ -61,6 +58,7 @@ const updateUser = async (req, res) => {
     res.status(500).json({ status: false, message: error });
   }
 };
+
 const deleteUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
@@ -75,4 +73,10 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ status: false, message: 'error in the server' });
   }
 };
-module.exports = { createUser, getUser, deleteUser, updateUser };
+
+module.exports = {
+  createUser,
+  getUser,
+  deleteUser,
+  updateUser
+};
