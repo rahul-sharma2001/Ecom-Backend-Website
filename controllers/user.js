@@ -44,7 +44,7 @@ const updateUser = async (req, res) => {
       }
     );
     if (!user) {
-      return res.status(404).json({ msg: `no task with id: ${userId}` });
+      return res.status(404).json({ msg: `no user with id: ${userId}` });
     }
     res
       .status(200)
