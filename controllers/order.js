@@ -1,12 +1,13 @@
 const orderModel = require('../model/order');
 const orderService = require('../services/order');
-const instance = new orderService();
+const orderServiceInstance = new orderService();
 
 
 module.exports = {
+  
   getOrder: async (req, res) => {
     try {
-      let orderlist = await instance.getOrders(req.params.userId);
+      let orderlist = await orderServiceInstance.getOrders(req.params.userId);
 
       if (orderlist) {
         res.status(200).json(orderlist);
@@ -20,7 +21,7 @@ module.exports = {
   },
   addOrder:async (req, res) => {
     try{
-    const newOrder = await instance.createOrder(req.body);
+    const newOrder = await orderServiceInstance.createOrder(req.body);
    
     if(newOrder){
       res.status(200).json({
@@ -39,10 +40,10 @@ module.exports = {
       throw err;
    }
   },
-  updateOrder:async (req,res)=>{
+  updateOrder: async (req,res)=>{
     try{
    
-    let updatedOrder = await instance.updateOrder(req.body);
+    let updatedOrder = await orderServiceInstance.updateOrder(req.body);
 
   
     if(updatedOrder){
@@ -66,7 +67,7 @@ module.exports = {
   deleteOrder:async (req,res)=>{
     try{
       console.log(req.body._Id)
-    let deletedOrder = await instance.deleteOrder(req.body);
+    let deletedOrder = await orderServiceInstance.deleteOrder(req.body);
     if(deletedOrder){
       console.log(deletedOrder);
       res.status(200).json({
