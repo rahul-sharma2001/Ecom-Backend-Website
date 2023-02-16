@@ -27,16 +27,13 @@ class UserService {
       throw error;
     }
   }
-  async getUser({ _id: userId }) {
+  async getUser(id) {
     try {
-      if (!{ _id: userId }) {
+      if (!id) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel
-        .findOne({ _id: userId })
-        .select('-password');
-
+      const savedUser = await userModel.findOne(id);
       if (savedUser) {
         return savedUser;
       } else {
