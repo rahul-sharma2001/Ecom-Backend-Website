@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const routers = require('./routes/index');
+const addressRouters = require('./routes/address')
+
 require('dotenv').config();
 const config = require('./constants/config');
 // const routes = require('./routes');
@@ -23,11 +25,9 @@ mongoose
 
 app.use(express.json());
 
-// app.get('/hello',(req,res)=>{
-//     res.send('hii')
-// })
 
 app.use('/api', routers);
+app.use('/address/api', addressRouters)
 
 app.listen(port, () => {
   console.log(`server started at the port localhost:${port}/api/v1/user`);
