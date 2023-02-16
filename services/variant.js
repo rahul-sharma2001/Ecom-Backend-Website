@@ -4,7 +4,7 @@ class VariantServices {
 
     async updateVariantQuantityById({ variantId, previousQuantity, newQuantity }) {
 
-        // --> Quantity is always greater than or equal to 0 (qty >= 0), check this too...
+        // --> remaining = Quantity is always greater than or equal to 0 (qty >= 0), check this too...
 
         if (!variantId || (!previousQuantity && previousQuantity != 0) || (!newQuantity && newQuantity != 0)) {
             throw new Error("variantId, previousQuantity and newQuantity are required field")
