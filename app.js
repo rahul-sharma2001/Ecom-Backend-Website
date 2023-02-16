@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const routers = require('./routes/index');
+const productRouters = require('./routes/product');
 require('dotenv').config();
 const config = require('./constants/config');
 // const routes = require('./routes');
@@ -28,7 +29,7 @@ app.use(express.json());
 // })
 
 app.use('/api', routers);
-
+app.use('/api/v1/product', productRouters);
 app.listen(port, () => {
   console.log(`server started at the port localhost:${port}/api/v1/user`);
 });
