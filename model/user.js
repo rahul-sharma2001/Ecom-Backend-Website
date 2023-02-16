@@ -45,4 +45,4 @@ const userSchema=new mongoose.Schema({
 //     return obj;
 //   }
 
-module.exports=mongoose.model('task',userSchema)
+module.exports=mongoose.model('user',userSchema)

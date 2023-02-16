@@ -30,5 +30,5 @@ app.use(express.json());
 app.use('/api', routers);
 
 app.listen(port, () => {
-  console.log(`server started at the port localhost:${port}/api/v1/user`);
+  console.log(`server started at the port localhost:${port}/api/`);
 });

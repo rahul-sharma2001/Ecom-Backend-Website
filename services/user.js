@@ -10,6 +10,7 @@ const userModel = require('../model/user');
 // }
 
 class UserService {
+  
   async createUser(userInfo) {
     try {
       if (!userInfo) {
@@ -27,6 +28,7 @@ class UserService {
       throw error;
     }
   }
+
   async getUser({ _id: userId }) {
     try {
       if (!{ _id: userId }) {
@@ -46,6 +48,7 @@ class UserService {
       throw error;
     }
   }
+
   async updateUser({ _id: userId }) {
     try {
       if (!{ _id: userId }) {
