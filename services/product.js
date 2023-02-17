@@ -2,7 +2,7 @@ const { productSchema } = require('../model/product')
 
 class productService {
 
-    async createProduct(productInfo) {
+    async CreateProduct(productInfo) {
         try {
             if (!productInfo) {
                 throw new Error('product Details are required');
@@ -14,7 +14,7 @@ class productService {
         }
     }
 
-    async getAllProduct(body) {
+    async GetAllProduct(body) {
         const { name, sort, fields, gender, category, brand,numericFilters, color, availability } = body;
         const productQuery = {};
         if(name){
@@ -53,7 +53,7 @@ class productService {
         return filterProduct;
     }
 
-    async getOneProduct(productId) {
+    async GetOneProduct(productId) {
         try {
             if (!productId) {
                 throw new Error('product id is require');
@@ -66,7 +66,7 @@ class productService {
     }
 
 
-    async deleteProduct(productId) {
+    async DeleteProduct(productId) {
         try {
             if (!productId) {
                 throw new Error('product id is require');
@@ -77,7 +77,7 @@ class productService {
         }
     }
 
-    async deleteVariant(productId, varientId) {
+    async DeleteVariant(productId, varientId) {
         try {
             if (!productId) {
                 throw new Error('product id is require');
@@ -88,7 +88,7 @@ class productService {
         }
     }
 
-    async updateProduct(productId, bodyData) {
+    async UpdateProduct(productId, bodyData) {
         try {
             if (!productId) {
                 throw new Error('product id is require');
