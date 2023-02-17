@@ -1,13 +1,13 @@
-const userModel = require('../model/user');
+const sellerModel = require('../model/seller');
 
-class UserService {
-  async createUser(userInfo) {
+class SellerService {
+  async createSeller(sellerInfo) {
     try {
-      if (!userInfo) {
+      if (!sellerInfo) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel.create(userInfo);
+      const savedUser = await sellerModel.create(sellerInfo);
 
       if (savedUser) {
         return savedUser;
@@ -18,13 +18,13 @@ class UserService {
       throw error;
     }
   }
-  async getUser(id) {
+  async getSeller(id) {
     try {
       if (!id) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel.findOne(id).select('-password');
+      const savedUser = await sellerModel.findOne(id).select('-password');
 
       if (savedUser) {
         return savedUser;
@@ -35,13 +35,13 @@ class UserService {
       throw error;
     }
   }
-  async updateUser(id, update, opts) {
+  async updateSeller(id, update, opts) {
     try {
       if (!id) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel.findOneAndUpdate(id, update, opts);
+      const savedUser = await sellerModel.findOneAndUpdate(id, update, opts);
       if (savedUser) {
         return savedUser;
       } else {
@@ -51,23 +51,17 @@ class UserService {
       throw error;
     }
   }
-  async deleteUser(id) {
+  async deleteSeller(id) {
     try {
       if (!id) {
         throw new Error('User details is required');
       }
 
-      const savedUser = await userModel.findOneAndDelete(id);
-
-      if (savedUser) {
-        return savedUser;
-      } else {
-        return null;
-      }
+      const savedUser = await sellerModel.findOneAndDelete(id);
     } catch (error) {
       throw error;
     }
   }
 }
 
-module.exports = UserService;
+module.exports = SellerService;

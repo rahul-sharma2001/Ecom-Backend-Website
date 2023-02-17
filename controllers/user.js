@@ -1,11 +1,10 @@
 const UserService = require('../services/user');
-const userModel = require('../model/user');
-let userServiceInstance = new UserService();
+let userService = new UserService();
 //in this controller/tasks file we are writing all the res.send stuff and importing it in routes/tasks trough getAllTasks obj
 const createUser = async (req, res) => {
   const user = req.body;
   try {
-    let adduser = await userServiceInstance.createUser(user);
+    let adduser = await userService.createUser(user);
     res
       .status(200)
       .json({ status: true, message: 'user created successfully!' });
@@ -19,7 +18,7 @@ const getUser = async (req, res) => {
   try {
     // console.log(findUser.toString(), ", = ", req.params)
     const { id: userId } = req.params;
-    const user = await userServiceInstance.getUser({ _id: userId });
+    const user = await userService.getUser({ _id: userId });
     if (!user) {
       return res
         .status(404)
@@ -41,14 +40,10 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    const user = await userServiceInstance.updateUser(
-      { _id: userId },
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
+    const user = await userService.updateUser({ _id: userId }, req.body, {
+      new: true,
+      runValidators: true
+    });
     if (!user) {
       return res
         .status(404)
@@ -64,7 +59,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    const user = await userServiceInstance.deleteUser({ _id: userId });
+    const user = await userService.deleteUser({ _id: userId });
     if (!user) {
       return res.status(404).json({ msg: `no task with id: ${userId}` });
     }
