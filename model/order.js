@@ -1,6 +1,6 @@
 let mongoose = require('mongoose');
 let userSchema = new mongoose.Schema({
-  // userId:mongoose.Schema.Types.ObjectId,
+
   userId: {
     type: String,
     required: [true, 'Must Provide User Id']
@@ -53,8 +53,7 @@ let productSchema = new mongoose.Schema({
   }
 });
 let orderSchema = new mongoose.Schema({
-  // orderId:mongoose.Schema.Types.ObjectId
-  // paymentId:mongoose.Schema.Types.ObjectId,
+  
 
   _Id: { 
     type: String 
@@ -79,15 +78,19 @@ let orderSchema = new mongoose.Schema({
     type: Object,
     required: [true, 'Must provide shipping address']
   },
-  status: { // status: [delivered | pending | cancelled | not delivered | ]
+  status: { 
     type: String, 
     required: [true, 'Must Provide Order Status'] 
   }, 
   orderDate: {
-    type:String
+    type:String,
+    format:"date",
+    require: [true,"Must Provide Order Date"]
   },
   deliveryDate: {
-    type:String
+    type:String,
+    format:"date",
+    require: [true, "Must Provide deliveryDate"]
   },
   totalAmount: { 
     type: Number, 
