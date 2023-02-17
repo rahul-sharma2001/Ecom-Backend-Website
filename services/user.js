@@ -9,7 +9,14 @@ const userModel = require('../model/user');
 //   })
 // }
 
+// const userServiceInstance = new UserService(userModel);
+// const seller = new UserService(sellerModel)
+
 class UserService {
+  // constructor(model) {
+  //   this.model = model;
+  // }
+
   async createUser(userInfo) {
     try {
       if (!userInfo) {
