@@ -8,11 +8,7 @@ class productService {
                 throw new Error('product Details are required');
             }
             const savedProduct = await productSchema.create(productInfo);
-            if (savedProduct) {
                 return savedProduct;
-            } else {
-                return null;
-            }
         } catch (error) {
             throw error;
         }
@@ -63,11 +59,7 @@ class productService {
                 throw new Error('product id is require');
             }
             const product = await productSchema.findOne({ _id: productId });
-            if (product) {
                 return product;
-            } else {
-                return null;
-            }
         } catch (error) {
             throw error;
         }
@@ -80,11 +72,6 @@ class productService {
                 throw new Error('product id is require');
             }
             const deleteProductInfo = await productSchema.findOneAndDelete({ _id: productId });
-            if (deleteProductInfo) {
-                return deleteProductInfo;
-            } else {
-                return null;
-            }
         } catch (error) {
             throw error;
         }
@@ -96,11 +83,6 @@ class productService {
                 throw new Error('product id is require');
             }
            const deleteVariant= await productSchema.findOneAndUpdate({_id:productId},{$pull :{varients:{_id:varientId}}});
-            if(deleteVariant){
-                return deleteVariant;
-            }else{
-                return null;
-            }
         } catch (error) {
             throw error;
         }
@@ -115,11 +97,7 @@ class productService {
                 new: true,
                 runValidators: true,
             });
-            if (updatedProduct) {
                 return updatedProduct;
-            } else {
-                return null;
-            }
         } catch (error) {
             throw error;
         }
