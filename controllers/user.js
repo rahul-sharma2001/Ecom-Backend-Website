@@ -10,8 +10,7 @@ const createUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'user created successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: `error == ${error}` });
-    console.log(error);
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -26,10 +25,7 @@ const getUser = async (req, res) => {
     }
     res.status(200).json({ status: true, user });
   } catch (error) {
-    console.log('error===', error);
-    res
-      .status(500)
-      .json({ status: false, message: `error ingetUser== ${error}` });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -41,14 +37,15 @@ const updateUser = async (req, res) => {
       runValidators: true
     });
     if (!user) {
-      return res.status(404).json({ msg: `no user with id: ${userId}` });
+      return res
+        .status(404)
+        .json({ status: false, message: `no user with id: ${userId}` });
     }
     res
       .status(200)
       .json({ status: true, message: 'user updated successfully!' });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: error });
+    res.status(500).json({ status: false, messagesg: error.message });
   }
 };
 
@@ -57,13 +54,15 @@ const deleteUser = async (req, res) => {
     const { id: userId } = req.params;
     const user = await userService.deleteUser({ _id: userId });
     if (!user) {
-      return res.status(404).json({ msg: `no user with id: ${userId}` });
+      return res
+        .status(404)
+        .json({ status: false, message: `no user with id: ${userId}` });
     }
     res
       .status(200)
       .json({ status: true, message: 'user deleted successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: error });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 

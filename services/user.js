@@ -45,6 +45,10 @@ class UserService {
       }
 
       const deletedUser = await userModel.findOneAndDelete(id);
+
+      if (deletedUser) {
+        return 'user deleted.';
+      }
     } catch (error) {
       throw error;
     }
