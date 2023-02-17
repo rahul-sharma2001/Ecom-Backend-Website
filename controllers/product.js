@@ -5,7 +5,6 @@ const createProduct = async(req,res)=>{
     const product =req.body;
     try {
         const addProduct = await productServiceInstance.createProduct(product);
-        console.log(addProduct);
         res.status(200).json({status: true, message: 'product created successfully!' , product: addProduct });
     } catch (error) {
         res.status(500).json({ status: false, message: `error == ${error}` });
@@ -62,8 +61,9 @@ const deleteProduct = async(req,res)=>{
 
 const deleteVariant=async(req,res)=>{
     const {id:variantId}= req.params;
+    const {id: productId}= req.body;
     try {
-        const deleteVariant = await  productServiceInstance.deleteVariant(variantId);
+        const deleteVariant = await  productServiceInstance.deleteVariant(productId,variantId);
         res.status(200).json({status: true, message: 'product deleted successfully!',product : deleteVariant});
     } catch (error) {
         res.status(500).json({ status: false, message: `error == ${error}` });
