@@ -10,7 +10,7 @@ const createReview = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'review created successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: `error == ${error}` });
+    res.status(500).json({ status: false, message: error.message });
     console.log(error);
   }
 };
@@ -30,7 +30,7 @@ const getReview = async (req, res) => {
     console.log('error===', error);
     res
       .status(500)
-      .json({ status: false, message: `error ingetUser== ${error}` });
+      .json({ status: false, message: error.message });
   }
 };
 
@@ -48,7 +48,7 @@ const getAllReview = async (req, res) => {
     console.log('error===', error);
     res
       .status(500)
-      .json({ status: false, message: `error ingetUser== ${error}` });
+      .json({ status: false, message: error.message });
   }
 };
 
@@ -72,7 +72,7 @@ const updateReview = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'review updated successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: error });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -87,7 +87,7 @@ const deleteReview = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'user deleted successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: 'error in the server' });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
