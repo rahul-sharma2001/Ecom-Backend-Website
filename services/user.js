@@ -7,11 +7,7 @@ class UserService {
         throw new Error('User details is required');
       }
       const savedUser = await userModel.create(userInfo);
-      if (savedUser) {
-        return savedUser;
-      } else {
-        return null;
-      }
+      return savedUser;
     } catch (error) {
       throw error;
     }
@@ -24,12 +20,7 @@ class UserService {
       }
 
       const getUser = await userModel.findOne(id).select('-password');
-
-      if (getUser) {
-        return getUser;
-      } else {
-        return null;
-      }
+      return getUser;
     } catch (error) {
       throw error;
     }
@@ -41,12 +32,7 @@ class UserService {
         throw new Error('User details is required');
       }
       const updatedUser = await userModel.findOneAndUpdate(id, update, opts);
-
-      if (updatedUser) {
-        return updatedUser;
-      } else {
-        return null;
-      }
+      return updatedUser;
     } catch (error) {
       throw error;
     }
@@ -59,12 +45,6 @@ class UserService {
       }
 
       const deletedUser = await userModel.findOneAndDelete(id);
-
-      if (deletedUser) {
-        return deletedUser;
-      } else {
-        return null;
-      }
     } catch (error) {
       throw error;
     }

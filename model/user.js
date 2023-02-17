@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { isEmail } = require('validator');
+const { isEmail, isStrongPassword } = require('validator');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -23,16 +23,18 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'must provide password']
+    required: [true, 'must provide password'],
+    validate: [isStrongPassword, 'provide strong password']
   },
   contactNumber: {
     type: Number,
+    unique: true,
     required: [true, 'must provide contact-number'],
-    maxlength: [10, 'contact number should not contain more than 10 characters']
+    min: 10,
+    max: [10, 'contact number should not contain more than 10 characters']
   },
   role: {
     type: String,
-    // required:[true,"must provide role"],
     trim: true,
     default: 'user'
   }
