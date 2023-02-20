@@ -60,7 +60,7 @@ class SellerService {
 
       const deleteSeller = await sellerModel.findOneAndDelete(id);
       if (!deleteSeller) {
-        throw new Error('seller deleted');
+        throw new Error('seller not deleted');
       }
     } catch (error) {
       throw error;
