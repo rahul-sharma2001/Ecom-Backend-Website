@@ -27,11 +27,11 @@ const userSchema = new mongoose.Schema({
     validate: [isStrongPassword, 'provide strong password']
   },
   contactNumber: {
-    type: Number,
+    type: String,
     unique: true,
     required: [true, 'must provide contact-number'],
-    min: 10,
-    max: [10, 'contact number should not contain more than 10 characters']
+    minlength: 10,
+    maxlength: [10, 'contact number should consist of 10 digits']
   },
   role: {
     type: String,

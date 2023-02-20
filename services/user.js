@@ -46,8 +46,8 @@ class UserService {
 
       const deletedUser = await userModel.findOneAndDelete(id);
 
-      if (deletedUser) {
-        return 'user deleted.';
+      if (!deletedUser) {
+        throw new Error('user not deleted');
       }
     } catch (error) {
       throw error;
