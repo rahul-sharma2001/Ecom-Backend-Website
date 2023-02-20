@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { isEmail, isStrongPassword } = require('validator');
 
-//temperary address schema
+//temporary address schema
 const addressSchema = new mongoose.Schema({
   UserId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,6 +22,7 @@ const addressSchema = new mongoose.Schema({
   contactNumber: {
     type: String,
     required: [true, 'must provide contact-number'],
+    unique: [true, 'this contact already exists'],
     maxlength: [10, 'must provide 10 digit number']
   },
   pincode: {
@@ -63,13 +64,16 @@ const sellerModel = new mongoose.Schema({
     type: String,
     required: [true, 'must provide email'],
     unique: true,
-    validate: [isEmail, ' PLEASE PROVIDE VALID EMAIL'],
+    validate: [isEmail, 'please provide email'],
     trim: true
   },
   password: {
     type: String,
     required: [true, 'must provide password'],
-    validate: [isStrongPassword, 'please provide strong password']
+    validate: [
+      isStrongPassword,
+      'please provide strong password with minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1'
+    ]
   },
   contactNumber: {
     type: String,

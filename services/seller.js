@@ -1,3 +1,4 @@
+const { error } = require('winston');
 const sellerModel = require('../model/seller');
 
 class SellerService {
@@ -57,7 +58,22 @@ class SellerService {
         throw new Error('User details is required');
       }
 
-      const savedUser = await sellerModel.findOneAndDelete(id);
+      const deleteSeller = await sellerModel.findOneAndDelete(id);
+      if (!deleteSeller) {
+        throw new Error('seller deleted');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getLoginSeller(email) {
+    try {
+      if (!email) {
+        throw new Error('User details is required');
+      }
+
+      const getLoginSeller = await sellerModel.findOne(email);
+      return getLoginSeller;
     } catch (error) {
       throw error;
     }
