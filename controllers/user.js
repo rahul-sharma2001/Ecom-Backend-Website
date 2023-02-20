@@ -68,21 +68,19 @@ const updateUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'user updated successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: error });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 const deleteUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
     const user = await userServiceInstance.deleteUser({ _id: userId });
-    if (!user) {
-      return res.status(404).json({ msg: `no task with id: ${userId}` });
-    }
+
     res
       .status(200)
       .json({ status: true, message: 'user deleted successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: 'error in the server' });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 const login = async (req, res) => {

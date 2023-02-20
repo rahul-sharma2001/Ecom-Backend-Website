@@ -25,14 +25,13 @@ const userSchema = new mongoose.Schema({
     required: [true, 'must provide password']
   },
   contactNumber: {
-    type: Number,
+    type: String,
+    unique: true,
     required: [true, 'must provide contact-number'],
-    min: 10,
-    max: [10, 'contact should have 10 characters']
+    maxlength: [10, 'contact should have 10 characters']
   },
   role: {
     type: String,
-    // required:[true,"must provide role"],
     trim: true,
     default: 'user'
   }
@@ -45,4 +44,4 @@ const userSchema = new mongoose.Schema({
 //     return obj;
 //   }
 
-module.exports = mongoose.model('task', userSchema);
+module.exports = mongoose.model('user', userSchema);
