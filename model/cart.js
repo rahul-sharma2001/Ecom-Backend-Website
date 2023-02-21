@@ -1,11 +1,12 @@
 const mongoose = require('mongoose')
 
-// --> this is just temparary model to check all working well or not...
-// --> need to update all ID's type 'String' to 'ObjectId'
 const cartVariant = new mongoose.Schema({
     variantId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
+    },
+    images: {
+        type: [String]
     },
     size: {
         type: String
@@ -17,23 +18,31 @@ const cartVariant = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0
-    },
-    // images
+    }
 })
 
-// --> this is just temparary model to check all working well or not...
 const cartProduct = new mongoose.Schema({
     productId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
+        ref: 'Product'
     },
     price: {
         type: Number,
         required: true,
     },
+    category: {
+        type: String,
+    },
     name: {
         type: String,
         required: true,
+    },
+    productDetails: {
+        type: Object
+    },
+    images: {
+        type: [String]
     },
     selectedVariants: {
         type: [cartVariant],
@@ -41,15 +50,13 @@ const cartProduct = new mongoose.Schema({
     }
 })
 
-
-
-// why reference not working in userId--------------------------problem------------
+// --> why reference not working in userId--------------------------problem------------
 const Cart = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        unique: true,
-        ref: 'user'
+        ref: 'user',
+        unique: true
     },
     products: {
         type: [cartProduct],
@@ -58,8 +65,4 @@ const Cart = new mongoose.Schema({
     }
 })
 
-
-
-
-
-module.exports = mongoose.model('cart', Cart)
+module.exports = mongoose.model('Cart', Cart)
