@@ -1,9 +1,3 @@
-const Cart = require('../model/cart')
-const Variant = require('../model/product');
-
-const ProductServices = require('../services/product');
-const productServices = new ProductServices();
-
 const CartService = require('../services/cart')
 const cartService = new CartService();
 
