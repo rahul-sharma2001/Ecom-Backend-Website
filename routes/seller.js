@@ -5,7 +5,7 @@ const {
   updateSeller,
   deleteSeller,
   sellerLogin
-} = require('../controllers/selller');
+} = require('../controllers/seller');
 
 const router = express.Router();
 
