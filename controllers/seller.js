@@ -10,7 +10,6 @@ const createSeller = async (req, res) => {
     const hashedPassword = await bcrypt.hash(seller.password, 10);
     seller.password = hashedPassword;
 
-    console.log(seller);
     let addSeller = await SellerService.createSeller(seller);
     res.status(200).json({
       status: true,
@@ -18,7 +17,6 @@ const createSeller = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
-    console.log(error);
   }
 };
 const getSeller = async (req, res) => {
@@ -32,7 +30,6 @@ const getSeller = async (req, res) => {
     }
     res.status(200).json({ status: true, seller });
   } catch (error) {
-    console.log('error===', error);
     res.status(500).json({ status: false, message: error.message });
   }
 };
@@ -68,7 +65,6 @@ const deleteSeller = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'seller deleted successfully!' });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ status: false, message: error.message });
   }
 };
@@ -108,7 +104,6 @@ const sellerLogin = async (req, res) => {
       }
     }
   } catch (error) {
-    console.log('error = ', error);
     res.status(200).json({ status: false, message: error.message });
   }
 };

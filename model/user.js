@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const { isEmail } = require('validator');
+
+const { isEmail, isStrongPassword } = require('validator');
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -22,26 +24,21 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'must provide password']
+    required: [true, 'must provide password'],
+    validate: [isStrongPassword, 'provide strong password']
   },
   contactNumber: {
-    type: Number,
+    type: String,
+    unique: true,
     required: [true, 'must provide contact-number'],
-    maxlength: [10, 'contact number should not contain more than 10 characters']
+    minlength: 10,
+    maxlength: [10, 'contact number should consist of 10 digits']
   },
   role: {
     type: String,
-    // required:[true,"must provide role"],
     trim: true,
     default: 'user'
   }
 });
-
-//for not showing password in json obj
-// userSchema.methods.toJSON = function() {
-//     var obj = this.toObject();
-//     delete obj.password;
-//     return obj;
-//   }
 
 module.exports = mongoose.model('user', userSchema);
