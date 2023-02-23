@@ -1,3 +1,4 @@
+const product = require('../model/product');
 const { productSchema } = require('../model/product')
 
 class productService {
@@ -15,8 +16,11 @@ class productService {
     }
 
     async GetAllProduct(body) {
-        const { name, sort, fields, gender, category, brand,numericFilters, color, availability } = body;
+        const { name, sort, fields, gender, category, brand,maxPrice,minPrice,color,availability,sellerId } = body;
         const productQuery = {};
+        if(sellerId){
+            productQuery.sellerId = sellerId;
+        }
         if(name){
             productQuery.name = name;
         }
@@ -41,6 +45,9 @@ class productService {
         if (fields) {
             const fieldList = fields.split(',').join(' ');
             products = products.select(fieldList);
+        }
+        if(maxPrice || minPrice){
+
         }
         if(availability){
             products = products.find({'varients.noOfProducts' :{$gt : 0}} ) ; 
@@ -83,6 +90,7 @@ class productService {
                 throw new Error('product id is require');
             }
            const deleteVariant= await productSchema.findOneAndUpdate({_id:productId},{$pull :{varients:{_id:varientId}}});
+           console.log(deleteVariant);
         } catch (error) {
             throw error;
         }
