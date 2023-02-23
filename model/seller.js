@@ -35,8 +35,8 @@ const sellerModel = new mongoose.Schema({
     unique: true,
     minlength: 10,
     maxlength: [10, 'contact number should not contain more than 10 characters']
-  },
-  address: addressSchema
+  }
+  // address: addressSchema
 });
 
 module.exports = mongoose.model('seller', sellerModel);
