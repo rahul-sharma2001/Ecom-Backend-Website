@@ -12,7 +12,7 @@ const createUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
-    let adduser = await userService.createUser(user);
+    let addUser = await userService.createUser(user);
 
     res
       .status(200)
