@@ -10,13 +10,7 @@ const countrySchema = mongoose.Schema({
     shortname:{
         type: String,
         required: true
-    },
-    // states: [
-    //     {
-    //       type: Schema.Types.ObjectId,
-    //       ref: 'State'
-    //     }
-    //   ]
+    }
 })
 
 

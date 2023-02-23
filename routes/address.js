@@ -13,13 +13,14 @@ const {
 } = require('../controllers/address')
 
 
+
 router.get('/countries', getCountries)
 router.get('/states', getStates)
 router.get('/cities', getCities)
-router.post('/create-address', createAddress)
-router.put('/update-address/:id', updateAddress )
-router.delete('/delete-address/:id',deleteAddress)
-router.get('/address-byUserId/:userId', findAddressByUserId)
+router.post('/', createAddress)
+router.put('/:id', updateAddress )
+router.delete('/:id',deleteAddress)
+router.get('/:userId', findAddressByUserId)
 
 
 module.exports = router
