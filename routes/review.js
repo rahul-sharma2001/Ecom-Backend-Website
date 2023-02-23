@@ -1,7 +1,7 @@
 const express = require('express');
 const {
   createReview,
-  getReview,
+  getReviewForProduct,
   getAllReview,
   updateReview,
   deleteReview
@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 router.post('/', createReview);
-router.get('/:id', getReview);
+router.get('/:id', getReviewForProduct);
 router.get('/allReview/:productId', getAllReview);
 router.put('/:id', updateReview);
 router.delete('/:id', deleteReview);

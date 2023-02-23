@@ -11,13 +11,11 @@ const createReview = async (req, res) => {
       .json({ status: true, message: 'review created successfully!' });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
-    console.log(error);
   }
 };
 
-const getReview = async (req, res) => {
+const getReviewForProduct = async (req, res) => {
   try {
-    // console.log(findUser.toString(), ", = ", req.params)
     const { id: reviewId } = req.params;
     const review = await reviewServiceInstance.getReview({ _id: reviewId });
     if (!review) {
@@ -27,7 +25,6 @@ const getReview = async (req, res) => {
     }
     res.status(200).json({ status: true, review });
   } catch (error) {
-    console.log('error===', error);
     res
       .status(500)
       .json({ status: false, message: error.message });
@@ -45,7 +42,6 @@ const getAllReview = async (req, res) => {
     }
     res.status(200).json({ status: true, review });
   } catch (error) {
-    console.log('error===', error);
     res
       .status(500)
       .json({ status: false, message: error.message });
@@ -91,4 +87,4 @@ const deleteReview = async (req, res) => {
   }
 };
 
-module.exports = { createReview, getReview,getAllReview, updateReview, deleteReview };
+module.exports = { createReview, getReviewForProduct,getAllReview, updateReview, deleteReview };

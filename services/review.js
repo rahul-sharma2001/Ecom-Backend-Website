@@ -1,6 +1,6 @@
 const reviewModel = require('../model/review');
 
-class reveiwService {
+class ReviewService {
   async createReview(reviewInfo) {
     try {
       if (!reviewInfo) {
@@ -69,4 +69,4 @@ class reveiwService {
   }
 }
 
-module.exports = reveiwService;
+module.exports = ReviewService;
