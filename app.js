@@ -3,7 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const routers = require('./routes/index');
-const productRouters = require('./routes/product');
 require('dotenv').config();
 const config = require('./constants/config');
 const app = express();
@@ -30,10 +29,6 @@ app.use(express.json());
 
 app.use('/api', routers);
 app.listen(port, () => {
-<<<<<<< HEAD
-  console.log(`server started at the port localhost:${port}/api`);
-=======
   console.log(`server started at the port localhost:${port}`);
->>>>>>> develop
 });
 
