@@ -14,10 +14,10 @@ const createReview = async (req, res) => {
   }
 };
 
-const getReviewForProduct = async (req, res) => {
+const getReview = async (req, res) => {
   try {
     const { id: reviewId } = req.params;
-    const review = await reviewServiceInstance.getReview({ _id: reviewId });
+    const review = await reviewServiceInstance.getReviewForProduct({ _id: reviewId });
     if (!review) {
       return res
         .status(404)
@@ -87,4 +87,4 @@ const deleteReview = async (req, res) => {
   }
 };
 
-module.exports = { createReview, getReviewForProduct,getAllReview, updateReview, deleteReview };
+module.exports = { createReview, getReview,getAllReview, updateReview, deleteReview };

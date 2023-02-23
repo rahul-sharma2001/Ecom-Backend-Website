@@ -13,7 +13,7 @@ class ReviewService {
     }
   }
 
-  async getReview(id) {
+  async getReviewForProduct(id) {
     try {
       if (!id) {
         throw new Error('id is required');
