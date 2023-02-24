@@ -71,7 +71,7 @@ const deleteUser = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    const existingUser = await userService.getUser({
+    const existingUser = await userService.getLoginUser({
       emailId: emailId
     });
     if (!existingUser) {
