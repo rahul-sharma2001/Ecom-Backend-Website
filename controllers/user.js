@@ -1,11 +1,19 @@
 const UserService = require('../services/user');
 const userModel = require('../model/user');
-let userService = new UserService();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const user = require('../model/user');
+require('dotenv').config();
 
+let userService = new UserService();
+//in this controller/tasks file we are writing all the res.send stuff and importing it in routes/tasks trough getAllTasks obj
 const createUser = async (req, res) => {
   const user = req.body;
   try {
-    let adduser = await userService.createUser(user);
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
+    let addUser = await userService.createUser(user);
+
     res
       .status(200)
       .json({ status: true, message: 'user created successfully!' });
@@ -45,7 +53,7 @@ const updateUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'user updated successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, messagesg: error.message });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -60,10 +68,44 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ status: false, message: error.message });
   }
 };
+const login = async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const existingUser = await userService.getUser({
+      emailId: emailId
+    });
+    if (!existingUser) {
+      res.status(401).json({
+        status: false,
+        message: 'invalid emailId or password'
+      });
+    } else {
+      const matchPassword = await bcrypt.compare(
+        password,
+        existingUser.password
+      );
 
-module.exports = {
-  createUser,
-  getUser,
-  deleteUser,
-  updateUser
+      if (!matchPassword) {
+        return res.status(401).json({
+          status: false,
+          message: 'invalid emailId or password'
+        });
+      } else {
+        const jwtToken = jwt.sign(
+          { id: existingUser._id },
+          process.env.JWT_SECRET_KEY
+        );
+
+        res.status(200).json({
+          status: true,
+          message: 'loggined successfully!',
+          token: jwtToken
+        });
+      }
+    }
+  } catch (error) {
+    console.log('error = ', error);
+    res.status(200).json({ status: false, message: error.message });
+  }
 };
+module.exports = { createUser, getUser, deleteUser, updateUser, login };

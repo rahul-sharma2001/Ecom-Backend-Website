@@ -12,7 +12,6 @@ class UserService {
       throw error;
     }
   }
-
   async getUser(id) {
     try {
       if (!id) {

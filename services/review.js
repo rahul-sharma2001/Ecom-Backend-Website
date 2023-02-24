@@ -62,7 +62,7 @@ class ReviewService {
       }
 
       const deletedReview = await reviewModel.findOneAndDelete(id);
-      return;
+      return deletedReview;
     } catch (error) {
       throw error;
     }
