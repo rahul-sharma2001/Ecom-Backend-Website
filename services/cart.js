@@ -1,6 +1,6 @@
 const Cart = require('../model/cart');
-const ProductServices = require('./product');
-const productServices = new ProductServices();
+const ProductService = require('./product');
+const productServices = new ProductService();
 
 class CartService {
 
@@ -119,32 +119,6 @@ class CartService {
         );
     }
 
-    async updateCartByNewVariant({ userId, productId, newVariant }) {
-        if (!userId || !productId || !newVariant) {
-            throw new Error("Required fields = userId, productId and newVariant, some of this not provided")
-        }
-
-        const previousCart = await Cart.findOneAndUpdate(
-            {
-                userId,
-                'products.productId': productId
-            },
-            {
-                'products.$.selectedVariants': newVariant
-            },
-            {
-                new: false,
-                runValidators: true
-            }
-        );
-
-        if (!previousCart) {
-            throw new Error("no cart data found")
-        }
-
-        return previousCart;
-    }
-
     async deleteCartByUserId({ userId }) {
         if (!userId) {
             throw new Error("userId is required field")
@@ -187,7 +161,8 @@ class CartService {
 
         // check cart
         const cartData = await Cart.findOne({ userId })
-
+        
+        console.log("cartData = ", cartData);
         // - no
         if (!cartData) {
             const createdCart = await this.createCart(
@@ -196,7 +171,6 @@ class CartService {
                     products: [product]
                 }
             )
-
             return
         }
 
@@ -207,6 +181,7 @@ class CartService {
             const productIndex = cartData.products.findIndex(val => val.productId == product.productId)
             const productInCart = cartData.products[productIndex];
 
+            console.log("product in cart = ", productInCart);
             // - no
             if (!productInCart) {
 
@@ -222,13 +197,15 @@ class CartService {
             // - yes
             else {
                 // check variant
-
+                console.log("variants = ", product.selectedVariants);
+                console.log("variant length = ", product.selectedVariants.length);
                 for (let i = 0; i < product.selectedVariants.length; i++) {
-                    const variantIndex = productInCart.selectedVariants.findIndex(variant => variant.variantId === product.selectedVariants[i].variantId);
+                    const variantIndex = productInCart.selectedVariants.findIndex(variant => variant.variantId == product.selectedVariants[i].variantId);
 
                     let newQuantity = 0;
                     let previousQuantity = 0;
 
+                    console.log(" i = ", i, ", variantIndex = ", variantIndex);
                     // - no
                     if (variantIndex === -1) {
                         productInCart.selectedVariants.push(product.selectedVariants[i])

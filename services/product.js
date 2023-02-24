@@ -1,6 +1,114 @@
-const Product = require('../model/product')
+const { productSchema } = require('../model/product')
 
-class ProductServices {
+class ProductService {
+
+    async CreateProduct(productInfo) {
+        try {
+            if (!productInfo) {
+                throw new Error('product Details are required');
+            }
+            const savedProduct = await productSchema.create(productInfo);
+                return savedProduct;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async GetAllProduct(body) {
+        const { name, sort, fields, gender, category, brand,maxPrice,minPrice,color,availability,sellerId } = body;
+        const productQuery = {};
+        if(sellerId){
+            productQuery.sellerId = sellerId;
+        }
+        if(name){
+            productQuery.name = name;
+        }
+        if (gender) {
+            productQuery['productDetails.gender'] = gender;
+        }
+        if (brand) {
+            productQuery['productDetails.brand'] = brand;
+        }
+        if (category) {
+            console.log('category')
+            productQuery.category = category;
+        }
+        if(color){
+            productQuery['variants.color']= color;
+        }
+        let products = productSchema.find(productQuery);
+        if (sort) {
+            const sortList = sort.split(',').join(' ');
+            products = products.sort(sortList);
+        }
+        if (fields) {
+            const fieldList = fields.split(',').join(' ');
+            products = products.select(fieldList);
+        }
+        if(maxPrice || minPrice){
+
+        }
+        if(availability){
+            products = products.find({'variants.noOfProducts' :{$gt : 0}} ) ; 
+        }
+        const page = Number(body.page) || 1;
+        const limit = Number(body.limit) || 24;
+        const skip = (page - 1) * limit;
+        products = products.skip(skip).limit(limit);
+        const filterProduct = await products;
+        return filterProduct;
+    }
+
+    async GetOneProduct(productId) {
+        try {
+            if (!productId) {
+                throw new Error('product id is require');
+            }
+            const product = await productSchema.findOne({ _id: productId });
+                return product;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+    async DeleteProduct(productId) {
+        try {
+            if (!productId) {
+                throw new Error('product id is require');
+            }
+            const deleteProductInfo = await productSchema.findOneAndDelete({ _id: productId });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async DeleteVariant(productId, variantId) {
+        try {
+            if (!productId) {
+                throw new Error('product id is require');
+            }
+           const deleteVariant= await productSchema.findOneAndUpdate({_id:productId},{$pull :{variants:{_id:variantId}}});
+           console.log(deleteVariant);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async UpdateProduct(productId, bodyData) {
+        try {
+            if (!productId) {
+                throw new Error('product id is require');
+            };
+            const updatedProduct = await productSchema.findOneAndUpdate({ _id: productId }, bodyData, {
+                new: true,
+                runValidators: true,
+            });
+                return updatedProduct;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     async updateVariantQuantityById({ productId, variantId, previousQuantity, newQuantity }) {
 
@@ -10,7 +118,7 @@ class ProductServices {
             throw new Error("productId, variantId, previousQuantity and newQuantity are required field")
         }
 
-        const updateVariantData = await Product.findOneAndUpdate(
+        const updateVariantData = await productSchema.findOneAndUpdate(
             {
                 _id: productId,
                 'variants._id': variantId
@@ -38,7 +146,7 @@ class ProductServices {
             throw new Error("productId is required field")
         }
 
-        const variants = await Product.findOne({ _id: productId }).select('variants')
+        const variants = await productSchema.findOne({ _id: productId }).select('variants')
 
         if(strict && !variants) {
             throw new Error("Product not found")
@@ -63,4 +171,4 @@ class ProductServices {
     }
 }
 
-module.exports = ProductServices
+module.exports = ProductService

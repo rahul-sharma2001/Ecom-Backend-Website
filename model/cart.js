@@ -8,16 +8,22 @@ const cartVariant = new mongoose.Schema({
     images: {
         type: [String]
     },
+    price: {
+        type: Number,
+        required: true,
+    },
     size: {
-        type: String
+        type: String,
+        required: true,
     },
     color: {
-        type: String
+        type: String,
+        required: true,
     },
     quantity: {
         type: Number,
         required: true,
-        min: 0
+        min: [0, "not available this quantity which you entered"]
     }
 })
 
@@ -27,19 +33,17 @@ const cartProduct = new mongoose.Schema({
         required: true,
         ref: 'Product'
     },
-    price: {
-        type: Number,
-        required: true,
-    },
     category: {
         type: String,
+        trim: true
     },
     name: {
         type: String,
         required: true,
+        trim: true
     },
     productDetails: {
-        type: Object
+        type: Object    
     },
     images: {
         type: [String]
@@ -55,7 +59,7 @@ const Cart = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'user',
+        ref: 'User',
         unique: true
     },
     products: {
