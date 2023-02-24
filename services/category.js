@@ -39,7 +39,7 @@ class CategoryService {
   async updateCategory(name, parent, category, updatedName) {
     try {
       if (!name) {
-        throw new Error('name is required');
+        throw new Error('category name is required');
       }
       const updatedCategory = await categoryModel.findOneAndUpdate(name, {
         $set: {
@@ -62,7 +62,7 @@ class CategoryService {
       const deletedCategory = await categoryModel.findOneAndDelete(name);
       const categoryName = name.name;
       if (!deletedCategory) {
-        throw new Error(`Category: ${categoryName} doesn't exists`);
+        throw new Error(`category: ${categoryName} doesn't exists`);
       }
     } catch (error) {
       throw error;

@@ -1,6 +1,6 @@
 const categoryModel = require('../model/category');
 const CategoryService = require('../services/category');
-let categoryServiceInstance = new CategoryService();
+let categoryService = new CategoryService();
 
 const createCategory = async (req, res) => {
   const category = req.body;
@@ -17,7 +17,7 @@ const createCategory = async (req, res) => {
         }
       }
       if (checking == false) {
-        await categoryServiceInstance.createCategory(category);
+        await categoryService.createCategory(category);
         res
           .status(200)
           .json({ status: true, message: 'category created successfully!' });
@@ -37,7 +37,7 @@ const getCategory = async (req, res) => {
   try {
     const category = req.params;
     const categoryName = '/' + category.parent;
-    let subCategories = await categoryServiceInstance.getCategory(categoryName);
+    let subCategories = await categoryService.getCategory(categoryName);
     if (subCategories.length === 0) {
       return res.status(404).json({
         status: false,
@@ -55,7 +55,7 @@ const updateCategory = async (req, res) => {
   try {
     const { name } = req.params;
     const { name: updatedName, parent, category } = req.body;
-    const updatedCategory = await categoryServiceInstance.updateCategory(
+    const updatedCategory = await categoryService.updateCategory(
       { name: name },
       parent,
       category,
@@ -77,7 +77,7 @@ const updateCategory = async (req, res) => {
 const deleteCategory = async (req, res) => {
   try {
     const { name: name } = req.params;
-    const deletedCategory = await categoryServiceInstance.deleteCategory({
+    const deletedCategory = await categoryService.deleteCategory({
       name: name
     });
     res

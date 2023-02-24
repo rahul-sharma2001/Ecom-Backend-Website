@@ -8,8 +8,5 @@ router.get('/:parent', getCategory)
 router.put('/:name', updateCategory);
 router.delete('/:name', deleteCategory);
 
-// router.put('/', updateCategory)
-// router.delete('/', deleteCateogry)
-
 
 module.exports = router

@@ -30,10 +30,6 @@ app.use(express.json());
 
 app.use('/api', routers);
 app.listen(port, () => {
-<<<<<<< HEAD
-  console.log(`server started at the port localhost:${port}/api`);
-=======
   console.log(`server started at the port localhost:${port}`);
->>>>>>> develop
 });
 
