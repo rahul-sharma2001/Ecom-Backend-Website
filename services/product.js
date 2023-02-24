@@ -1,7 +1,6 @@
-const product = require('../model/product');
 const { productSchema } = require('../model/product')
 
-class productService {
+class ProductService {
 
     async CreateProduct(productInfo) {
         try {
@@ -31,11 +30,10 @@ class productService {
             productQuery['productDetails.brand'] = brand;
         }
         if (category) {
-            console.log('category')
             productQuery.category = category;
         }
         if(color){
-            productQuery['varients.color']= color;
+            productQuery['variants.color']= color;
         }
         let products = productSchema.find(productQuery);
         if (sort) {
@@ -50,7 +48,7 @@ class productService {
 
         }
         if(availability){
-            products = products.find({'varients.noOfProducts' :{$gt : 0}} ) ; 
+            products = products.find({'variants.noOfProducts' :{$gt : 0}} ) ; 
         }
         const page = Number(body.page) || 1;
         const limit = Number(body.limit) || 24;
@@ -84,13 +82,12 @@ class productService {
         }
     }
 
-    async DeleteVariant(productId, varientId) {
+    async DeleteVariant(productId, variantId) {
         try {
             if (!productId) {
                 throw new Error('product id is require');
             }
-           const deleteVariant= await productSchema.findOneAndUpdate({_id:productId},{$pull :{varients:{_id:varientId}}});
-           console.log(deleteVariant);
+           const deleteVariant= await productSchema.findOneAndUpdate({_id:productId},{$pull :{variants:{_id:variantId}}});
         } catch (error) {
             throw error;
         }
@@ -110,6 +107,66 @@ class productService {
             throw error;
         }
     }
+
+    async updateVariantQuantityById({ productId, variantId, previousQuantity, newQuantity }) {
+
+        // --> remaining = Quantity is always greater than or equal to 0 (qty >= 0), check this too...
+
+        if (!productId || !variantId || (!previousQuantity && previousQuantity != 0) || (!newQuantity && newQuantity != 0)) {
+            throw new Error("productId, variantId, previousQuantity and newQuantity are required field")
+        }
+
+        const updateVariantData = await productSchema.findOneAndUpdate(
+            {
+                _id: productId,
+                'variants._id': variantId
+            },
+            {
+                $inc: {
+                    'variants.$.noOfProducts': (previousQuantity - newQuantity)
+                }
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updateVariantData) {
+            throw new Error("this variant not selected in product")
+        }
+
+        return updateVariantData
+    }
+
+    async getAllVariantsOfProduct({ productId, strict = true }) {
+        if (!productId) {
+            throw new Error("productId is required field")
+        }
+
+        const variants = await productSchema.findOne({ _id: productId }).select('variants')
+
+        if(strict && !variants) {
+            throw new Error("Product not found")
+        }
+
+        return variants;
+    }
+
+
+    getVariantFromProductById({ productData, variantId, strict = true }) {
+        if (!productData || !variantId) {
+            throw new Error("productData and variantId are required")
+        }
+
+        const variant = productData.selectedVariants.find(variant => variant.variantId == variantId)
+
+        if (strict && !variant) {
+            throw new Error("variant not available in product")
+        }
+
+        return variant;
+    }
 }
 
-module.exports = productService
+module.exports = ProductService
