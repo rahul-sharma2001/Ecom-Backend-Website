@@ -1,6 +1,6 @@
 const Cart = require('../model/cart');
 const ProductService = require('./product');
-const productServices = new ProductService();
+const productService = new ProductService();
 
 class CartService {
 
@@ -27,7 +27,7 @@ class CartService {
         for (const product of products) {
 
             for (const variant of product.selectedVariants) {
-                const updateVariantData = await productServices.updateVariantQuantityById(
+                const updateVariantData = await productService.updateVariantQuantityById(
                     {
                         productId: product.productId,
                         variantId: variant.variantId,
@@ -56,7 +56,7 @@ class CartService {
         }
 
         for (let i = 0; i < cartData.products.length; i++) {
-            cartData.products[i]['allVariants'] = await productServices.getAllVariantsOfProduct(
+            cartData.products[i]['allVariants'] = await productService.getAllVariantsOfProduct(
                 {
                     productId: cartData.products[i].productId,
                     strict: false
@@ -101,7 +101,7 @@ class CartService {
             }
         );
 
-        const previousVariant = productServices.getVariantFromProductById(
+        const previousVariant = productService.getVariantFromProductById(
             {
                 productData: previousProduct,
                 variantId
@@ -109,7 +109,7 @@ class CartService {
         )
 
         // --> if variant not updated and throw Error then think how to solve (ex. think how to revert previous update)
-        const updatedVariant = await productServices.updateVariantQuantityById(
+        const updatedVariant = await productService.updateVariantQuantityById(
             {
                 productId,
                 variantId,
@@ -139,7 +139,7 @@ class CartService {
 
         for (const product of products) {
             for (const variant of product.selectedVariants) {
-                const updateVariantData = await productServices.updateVariantQuantityById(
+                const updateVariantData = await productService.updateVariantQuantityById(
                     {
                         productId: product.productId,
                         variantId: variant.variantId,
@@ -162,7 +162,6 @@ class CartService {
         // check cart
         const cartData = await Cart.findOne({ userId })
         
-        console.log("cartData = ", cartData);
         // - no
         if (!cartData) {
             const createdCart = await this.createCart(
@@ -181,7 +180,6 @@ class CartService {
             const productIndex = cartData.products.findIndex(val => val.productId == product.productId)
             const productInCart = cartData.products[productIndex];
 
-            console.log("product in cart = ", productInCart);
             // - no
             if (!productInCart) {
 
@@ -197,15 +195,12 @@ class CartService {
             // - yes
             else {
                 // check variant
-                console.log("variants = ", product.selectedVariants);
-                console.log("variant length = ", product.selectedVariants.length);
                 for (let i = 0; i < product.selectedVariants.length; i++) {
                     const variantIndex = productInCart.selectedVariants.findIndex(variant => variant.variantId == product.selectedVariants[i].variantId);
 
                     let newQuantity = 0;
                     let previousQuantity = 0;
 
-                    console.log(" i = ", i, ", variantIndex = ", variantIndex);
                     // - no
                     if (variantIndex === -1) {
                         productInCart.selectedVariants.push(product.selectedVariants[i])
@@ -220,7 +215,7 @@ class CartService {
                         productInCart.selectedVariants[variantIndex].quantity = newQuantity;
                     }
 
-                    const updatedProduct = await productServices.updateVariantQuantityById(
+                    const updatedProduct = await productService.updateVariantQuantityById(
                         {
                             productId: product.productId,
                             variantId: product.selectedVariants[i].variantId,
@@ -264,7 +259,7 @@ class CartService {
         }
 
         for (const variant of product.selectedVariants) {
-            const updatedVariant = await productServices.updateVariantQuantityById(
+            const updatedVariant = await productService.updateVariantQuantityById(
                 {
                     productId: product.productId,
                     variantId: variant.variantId,
@@ -321,14 +316,14 @@ class CartService {
                 )
             }
 
-            const deletedVariant = productServices.getVariantFromProductById(
+            const deletedVariant = productService.getVariantFromProductById(
                 {
                     productData: deletedProductData,
                     variantId
                 }
             )
 
-            const updatedVariant = await productServices.updateVariantQuantityById(
+            const updatedVariant = await productService.updateVariantQuantityById(
                 {
                     productId,
                     variantId,

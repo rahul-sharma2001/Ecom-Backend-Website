@@ -30,7 +30,6 @@ class ProductService {
             productQuery['productDetails.brand'] = brand;
         }
         if (category) {
-            console.log('category')
             productQuery.category = category;
         }
         if(color){
@@ -89,7 +88,6 @@ class ProductService {
                 throw new Error('product id is require');
             }
            const deleteVariant= await productSchema.findOneAndUpdate({_id:productId},{$pull :{variants:{_id:variantId}}});
-           console.log(deleteVariant);
         } catch (error) {
             throw error;
         }

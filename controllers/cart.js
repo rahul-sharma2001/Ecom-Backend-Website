@@ -12,7 +12,6 @@ async function createCart(req, res) {
         })
 
     } catch (e) {
-        console.log("error = ", e);
         res.status(500).json({
             status: false,
             message: `Server Error, ${e.message}`
