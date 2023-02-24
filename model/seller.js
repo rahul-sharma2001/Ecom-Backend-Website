@@ -1,6 +1,46 @@
 const mongoose = require('mongoose');
 const { isEmail, isStrongPassword } = require('validator');
 
+const sellerAddressSchema = new mongoose.Schema({
+  addressType: {
+    type: String,
+    required: true,
+    enum: ['home', 'work']
+  },
+  name: {
+    type: String
+  },
+  contactNumber: {
+    type: String,
+    required: [true, 'must provide contact-number'],
+    unique: true,
+    minlength: 10,
+    maxlength: [10, 'contact number should not contain more than 10 characters']
+  },
+  pincode: {
+    type: Number,
+    min: 100000,
+    max: 999999,
+    required: true
+  },
+  street: {
+    type: String,
+    required: true
+  },
+  locality: {
+    type: String,
+    required: true
+  },
+  city: {
+    type: String,
+    required: true
+  },
+  state: {
+    type: String,
+    required: true
+  }
+});
+
 const sellerModel = new mongoose.Schema({
   firstName: {
     type: String,
@@ -35,8 +75,10 @@ const sellerModel = new mongoose.Schema({
     unique: true,
     minlength: 10,
     maxlength: [10, 'contact number should not contain more than 10 characters']
+  },
+  address: {
+    type: sellerAddressSchema,
+    required: true
   }
-  // address: addressSchema
 });
-
-module.exports = mongoose.model('seller', sellerModel);
+module.exports = mongoose.model('Seller', sellerModel);
