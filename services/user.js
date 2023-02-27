@@ -53,6 +53,18 @@ class UserService {
       throw error;
     }
   }
+  async getLoginUser(id) {
+    try {
+      if (!id) {
+        throw new Error('User details is required');
+      }
+
+      const getLoginUser = await userModel.findOne(id);
+      return getLoginUser;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = UserService;
