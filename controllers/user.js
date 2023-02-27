@@ -31,6 +31,7 @@ const getUser = async (req, res) => {
         .status(404)
         .json({ status: false, message: `no user with id: ${userId}` });
     }
+
     res.status(200).json({ status: true, user });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
