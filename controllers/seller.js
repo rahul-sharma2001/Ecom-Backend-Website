@@ -1,5 +1,5 @@
-const sellerService = require('../services/seller');
-let SellerService = new sellerService();
+const SellerService = require('../services/seller');
+let sellerService = new SellerService();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -10,7 +10,7 @@ const createSeller = async (req, res) => {
     const hashedPassword = await bcrypt.hash(seller.password, 10);
     seller.password = hashedPassword;
 
-    let addSeller = await SellerService.createSeller(seller);
+    let addSeller = await sellerService.createSeller(seller);
     res.status(200).json({
       status: true,
       message: 'seller created successfully!'
@@ -22,7 +22,7 @@ const createSeller = async (req, res) => {
 const getSeller = async (req, res) => {
   try {
     const { id: sellerId } = req.params;
-    const seller = await SellerService.getSeller({ _id: sellerId });
+    const seller = await sellerService.getSeller({ _id: sellerId });
     if (!seller) {
       return res
         .status(404)
@@ -37,7 +37,7 @@ const getSeller = async (req, res) => {
 const updateSeller = async (req, res) => {
   try {
     const { id: sellerId } = req.params;
-    const seller = await SellerService.updateSeller(
+    const seller = await sellerService.updateSeller(
       { _id: sellerId },
       req.body,
       {
@@ -60,7 +60,7 @@ const updateSeller = async (req, res) => {
 const deleteSeller = async (req, res) => {
   try {
     const { id: sellerId } = req.params;
-    const seller = await SellerService.deleteSeller({ _id: sellerId });
+    const seller = await sellerService.deleteSeller({ _id: sellerId });
     res
       .status(200)
       .json({ status: true, message: 'seller deleted successfully!' });
@@ -71,7 +71,7 @@ const deleteSeller = async (req, res) => {
 const sellerLogin = async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    const existingUser = await SellerService.getLoginSeller({
+    const existingUser = await sellerService.getLoginSeller({
       emailId: emailId
     });
     if (!existingUser) {
