@@ -1,6 +1,7 @@
 const userModel = require('../model/user');
 
 class UserService {
+  
   async createUser(userInfo) {
     try {
       if (!userInfo) {
