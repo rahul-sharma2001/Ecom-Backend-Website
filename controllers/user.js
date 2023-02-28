@@ -6,7 +6,6 @@ const user = require('../model/user');
 require('dotenv').config();
 
 let userService = new UserService();
-//in this controller/tasks file we are writing all the res.send stuff and importing it in routes/tasks trough getAllTasks obj
 const createUser = async (req, res) => {
   const user = req.body;
   try {

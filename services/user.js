@@ -25,7 +25,6 @@ class UserService {
       throw error;
     }
   }
-
   async updateUser(id, update, opts) {
     try {
       if (!id) {
@@ -37,7 +36,6 @@ class UserService {
       throw error;
     }
   }
-
   async deleteUser(id) {
     try {
       if (!id) {
