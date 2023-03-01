@@ -5,29 +5,10 @@ let categoryService = new CategoryService();
 const createCategory = async (req, res) => {
   const category = req.body;
   try {
-    const category_data = await categoryModel.find();
-    if (category_data.length > 0) {
-      let checking = false;
-      for (let i = 0; i < category_data.length; i++) {
-        if (
-          category_data[i]['name'].toLowerCase() == req.body.name.toLowerCase()
-        ) {
-          checking = true;
-          break;
-        }
-      }
-      if (checking == false) {
-        await categoryService.createCategory(category);
-        res
-          .status(200)
-          .json({ status: true, message: 'category created successfully!' });
-      } else {
-        res.status(404).json({
-          status: false,
-          message: `This Category ${category.name} already exists`
-        });
-      }
-    }
+    await categoryService.createCategory(category);
+    res
+      .status(200)
+      .json({ status: true, message: 'category created successfully!' });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
