@@ -6,7 +6,6 @@ const user = require('../model/user');
 require('dotenv').config();
 
 let userService = new UserService();
-//in this controller/tasks file we are writing all the res.send stuff and importing it in routes/tasks trough getAllTasks obj
 const createUser = async (req, res) => {
   const user = req.body;
   try {
@@ -31,6 +30,7 @@ const getUser = async (req, res) => {
         .status(404)
         .json({ status: false, message: `no user with id: ${userId}` });
     }
+
     res.status(200).json({ status: true, user });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -71,7 +71,7 @@ const deleteUser = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    const existingUser = await userService.getUser({
+    const existingUser = await userService.getLoginUser({
       emailId: emailId
     });
     if (!existingUser) {

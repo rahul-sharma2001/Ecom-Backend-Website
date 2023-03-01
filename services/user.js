@@ -25,7 +25,6 @@ class UserService {
       throw error;
     }
   }
-
   async updateUser(id, update, opts) {
     try {
       if (!id) {
@@ -37,7 +36,6 @@ class UserService {
       throw error;
     }
   }
-
   async deleteUser(id) {
     try {
       if (!id) {
@@ -49,6 +47,18 @@ class UserService {
       if (!deletedUser) {
         throw new Error('user not deleted');
       }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getLoginUser(id) {
+    try {
+      if (!id) {
+        throw new Error('User details is required');
+      }
+
+      const getLoginUser = await userModel.findOne(id);
+      return getLoginUser;
     } catch (error) {
       throw error;
     }
