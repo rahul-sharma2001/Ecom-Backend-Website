@@ -75,6 +75,7 @@ const login = async (req, res) => {
     const existingUser = await userService.login({
       emailId: emailId, password:password
     });
+    res
     if(existingUser.status == false){
       res.status(401).json(existingUser)
     }else{

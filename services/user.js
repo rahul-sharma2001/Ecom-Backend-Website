@@ -56,7 +56,6 @@ class UserService {
             { id: LoginUser._id },
             process.env.JWT_SECRET_KEY
           );
-  
           return {
             status: true,
             message: 'login successfull!',

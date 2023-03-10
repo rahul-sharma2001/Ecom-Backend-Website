@@ -15,6 +15,7 @@ const port = process.env.PORT || config.SERVER_PORT;
 app.use(cors());
 app.use(morgan('dev'));
 
+
 mongoose.set('strictQuery', false);
 mongoose
   .connect(process.env.MONGO_URI)
