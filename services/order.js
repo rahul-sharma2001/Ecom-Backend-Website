@@ -118,13 +118,9 @@ class OrderService {
   async filterOrder(queryObject) {
     let { filter, limit = 20, offset = 0 } = queryObject;
 
+    let filterObj = {};
     const pipeline = [];
 
-    // if (!filter) {
-    //   let filterOrder = await orderModel.find({}).skip(offset).limit(limit);
-    //   return filterOrder;
-    // }
-    let filterObj = {};
     let { userId, _Id, paymentId, status, sellerId, category } = filter;
     if (userId) {
       filterObj['user.userId'] = userId;
