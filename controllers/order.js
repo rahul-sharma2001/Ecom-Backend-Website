@@ -11,9 +11,15 @@ const getOrder = async (req, res) => {
       limit: req.query.limit,
       filter: req.query.filter
     };
-    let orderlist = await orderServiceInstance.getOrders(queryObject);
-    if (orderlist) {
-      res.status(200).json(orderlist);
+    let orderList = await orderServiceInstance.getOrders(queryObject);
+    if (orderList) {
+      res.status(200).json(
+        {
+          message:"Order Fetched Successfully",
+          count:orderList.length,
+          details:orderList
+        }
+      );
     } else {
       res
         .status(404)
@@ -78,10 +84,17 @@ const deleteOrder = async (req, res) => {
 };
 const filterOrder = async (req,res)=>{
   try{
-    let filteredOrder = await orderServiceInstance.filteredOrder(req.body);
+    let queryObject = {
+      filter:req.body,
+      limit:req.query.limit,
+      offset:req.query.offset
+
+    }
+    let filteredOrder = await orderServiceInstance.filterOrder(queryObject);
     if(filteredOrder){
       res.status(200).json({
         message:"Orders filtered Successfully",
+        count:filteredOrder.length,
         details :filteredOrder
       })
     }

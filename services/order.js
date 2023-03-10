@@ -1,4 +1,8 @@
 const orderModel = require('../model/order');
+const moment = require('moment/moment');
+const counterModel = require('../model/counters');
+const config = require('../constants/config');
+let padderObj = new ZeroPadder(5);
 
 class OrderService {
   async createOrder(orderInfo) {
@@ -6,7 +10,11 @@ class OrderService {
       if (!orderInfo) {
         throw new error('Order Information Required to create Order');
       }
-      const newOrder = await new orderModel(orderInfo);
+      let idDigits = await this.getCounter();
+      let systemGeneratedId =
+        'BBOR' + moment().format('YYYYMM') + padderObj.pad(idDigits);
+      let finalObject = { ...orderInfo, _Id: systemGeneratedId };
+      const newOrder = await new orderModel(finalObject);
       const savedOrder = await newOrder.save();
       return savedOrder;
     } catch (err) {
@@ -107,34 +115,82 @@ class OrderService {
       throw err;
     }
   }
-  async filteredOrder(filter) {
+  async filterOrder(queryObject) {
+    let { filter, limit = 20, offset = 0 } = queryObject;
+
+    const pipeline = [];
+
+    // if (!filter) {
+    //   let filterOrder = await orderModel.find({}).skip(offset).limit(limit);
+    //   return filterOrder;
+    // }
+    let filterObj = {};
+    let { userId, _Id, paymentId, status, sellerId, category } = filter;
+    if (userId) {
+      filterObj['user.userId'] = userId;
+    }
+    if (_Id) {
+      filterObj['_Id'] = _Id;
+    }
+    if (paymentId) {
+      filterObj['paymentId'] = paymentId;
+    }
+    if (status) {
+      filterObj['status'] = status;
+    }
+    if (sellerId) {
+      filterObj['products.sellerId'] = sellerId;
+
+      pipeline.push({
+        $unwind: { path: '$products' }
+      });
+
+      pipeline.push({
+        $project: { totalAmount: 0 }
+      });
+    }
+    if (category) {
+      filterObj['products.category'] = category;
+    }
+
+    pipeline.push({
+      $match: filterObj
+    });
+
+    let filterOrder = await orderModel
+      .aggregate(pipeline)
+      .skip(offset)
+      .limit(limit);
+    return filterOrder;
+  }
+  async getCounter() {
     try {
-      if ('status' in filter || '_Id' in filter || 'paymentId' in filter) {
-        let filteredOrder = await orderModel.find(filter).skip(0).limit(20);
-        return filteredOrder;
-      } else if ('userId' in filter) {
-        let filteredOrder = await orderModel
-          .find({ 'user.userId': filter.userId })
-          .skip(0)
-          .limit(20);
-        return filteredOrder;
-      } else if ('sellerId' in filter) {
-        let filteredOrder = await orderModel
-          .aggregate([
-            { $unwind: '$products' },
-            { $match: { 'products.sellerId': filter.sellerId } },
-            { $project: { products: 1 } }
-          ])
-          .skip(0)
-          .limit(20);
-        return filteredOrder;
-      } else {
-        let filteredOrder = await orderModel.find({}).skip(0).limit(20);
-        return filteredOrder;
-      }
+      let counterObj = await counterModel.findOneAndUpdate(
+        { _id: config.COUNTER_RECORD_ID },
+        {
+          $inc: { orderIdCounter: 1 },
+          new: true
+        }
+      );
+      return counterObj.orderIdCounter;
     } catch (err) {
       throw err;
     }
   }
+}
+function ZeroPadder(len, pad) {
+  if (len === undefined) {
+    len = 1;
+  } else if (pad === undefined) {
+    pad = '0';
+  }
+  var pads = '';
+  while (pads.length < len) {
+    pads += pad;
+  }
+  this.pad = function (what) {
+    var s = what.toString();
+    return pads.substring(0, pads.length - s.length) + s;
+  };
 }
 module.exports = OrderService;

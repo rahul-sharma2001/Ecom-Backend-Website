@@ -1,3 +1,4 @@
 module.exports = {
-    SERVER_PORT: 3000
+    SERVER_PORT: 3000,
+    COUNTER_RECORD_ID:"640acb215d8197b304195c36"
 }
