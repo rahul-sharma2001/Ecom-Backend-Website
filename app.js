@@ -8,11 +8,11 @@ const config = require('./constants/config');
 const app = express();
 const port = process.env.PORT || config.SERVER_PORT;
 
-const options = {
-  origin: 'http://localhost:3001/'
-};
+// const options = {
+//   origin: 'http://localhost:3001/'
+// };
 
-app.use(cors(options));
+app.use(cors());
 app.use(morgan('dev'));
 
 mongoose.set('strictQuery', false);

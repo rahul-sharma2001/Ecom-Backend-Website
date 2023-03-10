@@ -9,6 +9,7 @@ let userService = new UserService();
 //in this controller/tasks file we are writing all the res.send stuff and importing it in routes/tasks trough getAllTasks obj
 const createUser = async (req, res) => {
   const user = req.body;
+  console.log(user.password)
   try {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
@@ -18,7 +19,7 @@ const createUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'user created successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, message: error.message });
+    res.status(404).json({ status: false, message: error.message });
   }
 };
 
@@ -71,41 +72,17 @@ const deleteUser = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    const existingUser = await userService.getUser({
-      emailId: emailId
+    const existingUser = await userService.login({
+      emailId: emailId, password:password
     });
-    if (!existingUser) {
-      res.status(401).json({
-        status: false,
-        message: 'invalid emailId or password'
-      });
-    } else {
-      const matchPassword = await bcrypt.compare(
-        password,
-        existingUser.password
-      );
-
-      if (!matchPassword) {
-        return res.status(401).json({
-          status: false,
-          message: 'invalid emailId or password'
-        });
-      } else {
-        const jwtToken = jwt.sign(
-          { id: existingUser._id },
-          process.env.JWT_SECRET_KEY
-        );
-
-        res.status(200).json({
-          status: true,
-          message: 'loggined successfully!',
-          token: jwtToken
-        });
-      }
+    if(existingUser.status == false){
+      res.status(401).json(existingUser)
+    }else{
+      res.status(200).json(existingUser)
     }
   } catch (error) {
     console.log('error = ', error);
-    res.status(200).json({ status: false, message: error.message });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 module.exports = { createUser, getUser, deleteUser, updateUser, login };
