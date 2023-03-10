@@ -3,6 +3,7 @@ const router = express.Router();
 
 const controllers = require('../controllers/order');
 
+router.get('/admin',controllers.filterOrder);
 router.get('/:userId', controllers.getOrder);
 router.post('/', controllers.addOrder);
 router.patch('/', controllers.updateOrder);

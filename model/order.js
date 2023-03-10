@@ -16,6 +16,11 @@ let userSchema = new mongoose.Schema({
   contactNo: { 
     type: String, 
     required: [true, 'Must Provide Contact No'] 
+  },
+  role : {
+    type:String,
+    required: [ true , "Must Provide Role"]
+
   }
 });
 

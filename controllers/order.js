@@ -11,9 +11,7 @@ const getOrder = async (req, res) => {
       limit: req.query.limit,
       filter: req.query.filter
     };
-
     let orderlist = await orderServiceInstance.getOrders(queryObject);
-
     if (orderlist) {
       res.status(200).json(orderlist);
     } else {
@@ -78,5 +76,23 @@ const deleteOrder = async (req, res) => {
     throw err;
   }
 };
+const filterOrder = async (req,res)=>{
+  try{
+    let filteredOrder = await orderServiceInstance.filteredOrder(req.body);
+    if(filteredOrder){
+      res.status(200).json({
+        message:"Orders filtered Successfully",
+        details :filteredOrder
+      })
+    }
+    else{
+      res.status(404).send("Filter is invalid");
+    }
+  }
+  catch(err){
+    res.status(500).send("Server Error Cannot filter order");
+    throw err;
+  }
+}
 
-module.exports = { getOrder, updateOrder, addOrder, deleteOrder };
+module.exports = { getOrder, updateOrder, addOrder, deleteOrder ,filterOrder};

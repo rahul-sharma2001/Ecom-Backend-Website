@@ -107,5 +107,34 @@ class OrderService {
       throw err;
     }
   }
+  async filteredOrder(filter) {
+    try {
+      if ('status' in filter || '_Id' in filter || 'paymentId' in filter) {
+        let filteredOrder = await orderModel.find(filter).skip(0).limit(20);
+        return filteredOrder;
+      } else if ('userId' in filter) {
+        let filteredOrder = await orderModel
+          .find({ 'user.userId': filter.userId })
+          .skip(0)
+          .limit(20);
+        return filteredOrder;
+      } else if ('sellerId' in filter) {
+        let filteredOrder = await orderModel
+          .aggregate([
+            { $unwind: '$products' },
+            { $match: { 'products.sellerId': filter.sellerId } },
+            { $project: { products: 1 } }
+          ])
+          .skip(0)
+          .limit(20);
+        return filteredOrder;
+      } else {
+        let filteredOrder = await orderModel.find({}).skip(0).limit(20);
+        return filteredOrder;
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 module.exports = OrderService;
