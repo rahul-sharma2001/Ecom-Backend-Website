@@ -25,8 +25,7 @@ const getCategory = async (req, res) => {
         message: `no category with name: ${category.parent}`
       });
     }
-    let subCategoryNames = subCategories.map(({ name }) => name);
-    res.status(200).json({ status: true, subCategoryNames });
+    res.status(200).json({ status: true, subCategoryNames: subCategories });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
