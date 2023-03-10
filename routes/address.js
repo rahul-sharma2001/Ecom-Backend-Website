@@ -15,8 +15,8 @@ const {
 
 
 router.get('/countries', getCountries)
-router.get('/states', getStates)
-router.get('/cities', getCities)
+router.get('/states/:country_id', getStates)
+router.get('/cities/:state_id', getCities)
 router.post('/', createAddress)
 router.put('/:id', updateAddress )
 router.delete('/:id',deleteAddress)

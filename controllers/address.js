@@ -19,7 +19,7 @@ const getCountries = async (req, res) => {
 
 const getStates = async (req, res) => {
   try {
-    const states = await State.find({ country_id: req.body.country_id });
+    const states = await State.find({ country_id: req.params.country_id });
     res.status(200).send({ success: true, msg: 'States data', data: states });
   } catch (err) {
     res.status(400).send({ success: false, msg: err.message });
@@ -28,7 +28,7 @@ const getStates = async (req, res) => {
 
 const getCities = async (req, res) => {
   try {
-    const cities = await City.find({ state_id: req.body.state_id });
+    const cities = await City.find({ state_id: req.params.state_id });
     res.status(200).send({ success: true, msg: 'Cities data', data: cities });
   } catch (err) {
     res.status(400).send({ success: false, msg: err.message });
