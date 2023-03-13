@@ -10,7 +10,7 @@ const sellerAddressSchema = new mongoose.Schema({
   name: {
     type: String
   },
-  phoneNumber: {
+  contactNumber: {
     type: String,
     required: true
   },
