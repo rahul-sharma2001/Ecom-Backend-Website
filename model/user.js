@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'must provide email'],
     unique: true,
+    index: true,
     validate: [isEmail, ' PLEASE PROVIDE VALID EMAIL'],
     trim: true
   },
@@ -30,6 +31,7 @@ const userSchema = new mongoose.Schema({
   contactNumber: {
     type: String,
     unique: true,
+    index: true,
     required: [true, 'must provide contact-number'],
     minlength: 10,
     maxlength: [10, 'contact number should consist of 10 digits']
@@ -37,8 +39,14 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     trim: true,
-    default: 'user'
+    enum: ['user', 'admin', 'seller']
   }
+  // sellerOnlyField: {
+  //   type: String,
+  //   required: function () {
+  //     return this.role === 'seller';
+  //   }
+  // }
 });
 
 module.exports = mongoose.model('User', userSchema);

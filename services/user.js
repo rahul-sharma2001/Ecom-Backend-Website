@@ -1,14 +1,47 @@
+const sellerModel = require('../model/seller');
 const userModel = require('../model/user');
+const mongoose = require('mongoose');
 
 class UserService {
-  
   async createUser(userInfo) {
     try {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
       if (!userInfo) {
         throw new Error('User details is required');
       }
-      const savedUser = await userModel.create(userInfo);
-      return savedUser;
+
+      if (userInfo.role === 'user' || userInfo.role === 'admin') {
+        const savedUser = await userModel.create(userInfo);
+        return savedUser;
+      } else if (userInfo.role === 'seller') {
+        if (userInfo.address && userInfo.companyName) {
+          const savedUser = await userModel.create(userInfo);
+          const newSeller = {
+            sellerId: savedUser._id,
+            address: {
+              addressType: `${userInfo.address.addressType}`,
+              name: `${userInfo.address.name}`,
+              phoneNumber: `${userInfo.address.phoneNumber}`,
+              pincode: `${userInfo.address.pincode}`,
+              street: `${userInfo.address.street}`,
+              locality: `${userInfo.address.locality}`,
+              city: `${userInfo.address.city}`,
+              state: `${userInfo.address.state}`,
+              country: `${userInfo.address.country}`
+            },
+            companyName: userInfo.companyName
+          };
+
+          const savedSeller = await sellerModel.create(newSeller);
+          return savedSeller;
+        } else {
+          throw new Error('Address and Company Name Required');
+        }
+      } else {
+        throw new Error('error...........');
+      }
     } catch (error) {
       throw error;
     }
@@ -59,6 +92,35 @@ class UserService {
 
       const getLoginUser = await userModel.findOne(id);
       return getLoginUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getFilteredUsers(body) {
+    try {
+      if (!body) {
+        throw new Error('User details is required');
+      }
+      const { role, emailId, contactNumber } = body;
+
+      const userQuery = {};
+
+      if (role) {
+        userQuery['role'] = { $regex: `^${role}` };
+      }
+      if (emailId) {
+        userQuery['emailId'] = { $regex: `^${emailId}` };
+      }
+      if (contactNumber) {
+        userQuery['contactNumber'] = { $regex: `^${contactNumber}` };
+      }
+      const savedUser = await userModel.find(userQuery).select('-password');
+
+      if (savedUser) {
+        return savedUser;
+      } else {
+        return null;
+      }
     } catch (error) {
       throw error;
     }

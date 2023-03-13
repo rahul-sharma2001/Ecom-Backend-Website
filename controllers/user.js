@@ -12,10 +12,19 @@ const createUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
     let addUser = await userService.createUser(user);
-
-    res
-      .status(200)
-      .json({ status: true, message: 'user created successfully!' });
+    if (addUser.role === 'user') {
+      res
+        .status(200)
+        .json({ status: true, message: 'User created successfully!' });
+    } else if (addUser.role === 'admin') {
+      res
+        .status(200)
+        .json({ status: true, message: 'Admin created successfully!' });
+    } else {
+      res
+        .status(200)
+        .json({ status: true, message: 'Seller created successfully!' });
+    }
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
@@ -105,7 +114,27 @@ const login = async (req, res) => {
     }
   } catch (error) {
     console.log('error = ', error);
-    res.status(200).json({ status: false, message: error.message });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
-module.exports = { createUser, getUser, deleteUser, updateUser, login };
+const getUsers = async (req, res) => {
+  try {
+    const users = await userService.getFilteredUsers(req.query);
+    if (users.length !== 0) {
+      res.status(200).json({ status: true, users });
+    } else {
+      res.status(500).json({ status: false, message: 'user not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};
+
+module.exports = {
+  createUser,
+  getUser,
+  deleteUser,
+  updateUser,
+  login,
+  getUsers
+};
