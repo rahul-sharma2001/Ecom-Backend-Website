@@ -6,7 +6,9 @@ class ProductService {
       if (!productInfo) {
         throw new Error('product Details are required');
       }
+      console.log('backend' + productInfo)
       const savedProduct = await productSchema.create(productInfo);
+      console.log(savedProduct);
       return savedProduct;
     } catch (error) {
       throw error;
