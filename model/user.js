@@ -41,12 +41,6 @@ const userSchema = new mongoose.Schema({
     trim: true,
     enum: ['user', 'admin', 'seller']
   }
-  // sellerOnlyField: {
-  //   type: String,
-  //   required: function () {
-  //     return this.role === 'seller';
-  //   }
-  // }
 });
 
 module.exports = mongoose.model('User', userSchema);
