@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
   },
   contactNumber: {
     type: String,
-    unique: true,
     index: true,
     required: [true, 'must provide contact-number'],
     minlength: 10,
@@ -41,12 +40,6 @@ const userSchema = new mongoose.Schema({
     trim: true,
     enum: ['user', 'admin', 'seller']
   }
-  // sellerOnlyField: {
-  //   type: String,
-  //   required: function () {
-  //     return this.role === 'seller';
-  //   }
-  // }
 });
 
 module.exports = mongoose.model('User', userSchema);

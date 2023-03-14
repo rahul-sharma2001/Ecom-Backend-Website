@@ -1,21 +1,24 @@
 const sellerModel = require('../model/seller');
 const userModel = require('../model/user');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 class UserService {
   async createUser(userInfo) {
     try {
-      const session = await mongoose.startSession();
-      session.startTransaction();
-
       if (!userInfo) {
         throw new Error('User details is required');
       }
+
+      const hashedPassword = await bcrypt.hash(userInfo.password, 10);
+      userInfo.password = hashedPassword;
 
       if (userInfo.role === 'user' || userInfo.role === 'admin') {
         const savedUser = await userModel.create(userInfo);
         return savedUser;
       } else if (userInfo.role === 'seller') {
+
         if (userInfo.address && userInfo.companyName) {
           const savedUser = await userModel.create(userInfo);
           const newSeller = {
@@ -23,7 +26,7 @@ class UserService {
             address: {
               addressType: `${userInfo.address.addressType}`,
               name: `${userInfo.address.name}`,
-              phoneNumber: `${userInfo.address.phoneNumber}`,
+              contactNumber: `${userInfo.address.contactNumber}`,
               pincode: `${userInfo.address.pincode}`,
               street: `${userInfo.address.street}`,
               locality: `${userInfo.address.locality}`,
@@ -40,7 +43,7 @@ class UserService {
           throw new Error('Address and Company Name Required');
         }
       } else {
-        throw new Error('error...........');
+        throw new Error('only user or seller or admin can be created');
       }
     } catch (error) {
       throw error;
@@ -96,6 +99,51 @@ class UserService {
       throw error;
     }
   }
+
+  async login(loginData) {
+    try {
+      if (!loginData) {
+        throw new Error('User details is required');
+      }
+      const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
+      if (!LoginUser) {
+        return {
+          status: false,
+          message: 'invalid emailId or password'
+        };
+      } else {
+        const matchPassword = await bcrypt.compare(
+          loginData.password,
+          LoginUser.password
+        );
+
+        if (!matchPassword) {
+          return {
+            status: false,
+            message: 'invalid emailId or password'
+          };
+        } else {
+          const jwtToken = jwt.sign(
+            { id: LoginUser._id },
+            process.env.JWT_SECRET_KEY
+          );
+
+          LoginUser.password = null;
+
+          return {
+            status: true,
+            message: 'login successfull!',
+            token: jwtToken,
+            userData: LoginUser
+          };
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
   async getFilteredUsers(body) {
     try {
       if (!body) {
@@ -114,10 +162,36 @@ class UserService {
       if (contactNumber) {
         userQuery['contactNumber'] = { $regex: `^${contactNumber}` };
       }
-      const savedUser = await userModel.find(userQuery).select('-password');
 
-      if (savedUser) {
-        return savedUser;
+      const page = Number(body.page) || 1;
+      const limit = Number(body.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      let allUsers = await userModel.aggregate([
+        {
+          $match: userQuery
+        },
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'sellerId',
+            as: 'sellerAdditionalData'
+          }
+        },
+        {
+          $unwind: {
+            path: '$sellerAdditionalData',
+            preserveNullAndEmptyArrays: true
+          }
+        }
+      ]);
+
+      const count = allUsers.length;
+      const filteredUsers = allUsers.slice(skip, skip + limit);
+
+      if (filteredUsers) {
+        return { count, filteredUsers };
       } else {
         return null;
       }

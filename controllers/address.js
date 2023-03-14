@@ -44,14 +44,12 @@ const createAddress = async (req, res) => {
       .send({ status: true, message: 'Successfully address created' });
   } catch (err) {
     res.status(500).json({ status: false, message: `error == ${err}` });
-    console.log(err);
   }
 };
 
 const updateAddress = async (req, res) => {
   try {
     const { id: addressId } = req.params;
-    console.log(req.body);
     const updatedAddress = await addressServiceInstance.updateAddress(
       { _id: addressId },
       req.body,
@@ -60,7 +58,6 @@ const updateAddress = async (req, res) => {
         runValidators: true
       }
     );
-    console.log(updatedAddress);
 
     if (!updatedAddress) {
       return res.status(404).json({ status: 'address id not found' });
@@ -70,7 +67,6 @@ const updateAddress = async (req, res) => {
       .send({ status: true, message: 'successfully address updated' });
   } catch (err) {
     res.status(500).json({ status: false, message: `error == ${err}` });
-    console.log(err);
   }
 };
 
@@ -89,7 +85,6 @@ const deleteAddress = async (req, res) => {
       .json({ status: true, message: 'Successfully deleted address' });
   } catch (err) {
     res.status(500).json({ status: false, message: `error == ${err}` });
-    console.log(err);
   }
 };
 
@@ -109,7 +104,6 @@ const findAddressByUserId = async (req, res) => {
       .json({ status: true, message: 'Successfully find ', data: address });
   } catch (err) {
     res.status(500).json({ status: false, message: `error == ${err}` });
-    console.log(err);
   }
 };
 
