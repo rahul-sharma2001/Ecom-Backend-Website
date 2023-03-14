@@ -162,10 +162,36 @@ class UserService {
       if (contactNumber) {
         userQuery['contactNumber'] = { $regex: `^${contactNumber}` };
       }
-      const savedUser = await userModel.find(userQuery).select('-password');
 
-      if (savedUser) {
-        return savedUser;
+      const page = Number(body.page) || 1;
+      const limit = Number(body.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      let allUsers = await userModel.aggregate([
+        {
+          $match: userQuery
+        },
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'sellerId',
+            as: 'sellerAdditionalData'
+          }
+        },
+        {
+          $unwind: {
+            path: '$sellerAdditionalData',
+            preserveNullAndEmptyArrays: true
+          }
+        }
+      ]);
+
+      const count = allUsers.length;
+      const filteredUsers = allUsers.slice(skip, skip + limit);
+
+      if (filteredUsers) {
+        return { count, filteredUsers };
       } else {
         return null;
       }

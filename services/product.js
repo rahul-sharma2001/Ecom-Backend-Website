@@ -14,24 +14,44 @@ class ProductService {
     }
 
     async GetAllProduct(body) {
-        const { name, sort, fields, gender, category, brand, maxPrice, minPrice, color, availability, sellerId, search } = body;
+        const { name, sort, fields, gender, category, brand, maxPrice, minPrice, color, availability, sellerId, search, isAdminSide = 'false' } = body;
 
         const conditions = [];
         if (search) {
             conditions.push(
-                { 'name': { $regex: `^${search}` } },
-                { 'brand': { $regex: `^${search}` } }
+                { 'name': { $regex: new RegExp(`^${search}`, "i") } },
+                { 'brand': { $regex: new RegExp(`^${search}`, "i") } }
             )
         }
 
         const pipeline = [];
-        pipeline.push({
-            $unwind: { path: "$variants" }
-        })
+        const project = {
+            _id: 1,
+            sellerId: 1,
+            name: 1,
+            image: 1,
+            brand: 1,
+            productDetails: 1,
+            category: 1,
+            variants: 1,
+        }
+        const matchQuery = {}
 
-        if (sellerId) {
+        if (isAdminSide === 'true') {
             pipeline.push({
-                $match: { sellerId: sellerId }
+                $unwind: { path: "$variants" }
+            })
+            project['variant'] = '$variants'
+        }
+        else {
+            matchQuery['variants']= { $gt: 0 };
+        }
+        
+        if (sellerId) {
+            matchQuery['sellerId']= sellerId;
+
+            pipeline.push({
+                $match: matchQuery
             })
         }
 
@@ -44,15 +64,7 @@ class ProductService {
         }
 
         pipeline.push({
-            $project: {
-                _id: 1,
-                sellerId: 1,
-                name: 1,
-                brand: 1,
-                productDetails: 1,
-                category: 1,
-                'variant': '$variants'
-            }
+            $project: project
         })
 
         let products = productSchema.aggregate(pipeline);
@@ -119,6 +131,10 @@ class ProductService {
                 { _id: productId },
                 { $pull: { variants: { _id: variantId } } }
             );
+
+            if(deleteVariant && deleteVariant.variants.length < 2) {
+                await this.DeleteProduct(productId);
+            } 
         } catch (error) {
             throw error;
         }
