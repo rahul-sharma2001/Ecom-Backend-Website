@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
   },
   contactNumber: {
     type: String,
-    unique: true,
     index: true,
     required: [true, 'must provide contact-number'],
     minlength: 10,

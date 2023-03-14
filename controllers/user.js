@@ -1,6 +1,5 @@
 const UserService = require('../services/user');
 const userModel = require('../model/user');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const user = require('../model/user');
 require('dotenv').config();
@@ -9,8 +8,7 @@ let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
   try {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
+
     let addUser = await userService.createUser(user);
     if (addUser.role === 'user') {
       res
@@ -77,41 +75,21 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ status: false, message: error.message });
   }
 };
+
 const login = async (req, res) => {
   try {
     const { emailId, password } = req.body;
-    const existingUser = await userService.getLoginUser({
-      emailId: emailId
+    const existingUser = await userService.login({
+      emailId,
+      password,
     });
-    if (!existingUser) {
-      res.status(401).json({
-        status: false,
-        message: 'invalid emailId or password'
-      });
+
+    if (existingUser.status == false) {
+      res.status(401).json(existingUser)
     } else {
-      const matchPassword = await bcrypt.compare(
-        password,
-        existingUser.password
-      );
-
-      if (!matchPassword) {
-        return res.status(401).json({
-          status: false,
-          message: 'invalid emailId or password'
-        });
-      } else {
-        const jwtToken = jwt.sign(
-          { id: existingUser._id },
-          process.env.JWT_SECRET_KEY
-        );
-
-        res.status(200).json({
-          status: true,
-          message: 'loggined successfully!',
-          token: jwtToken
-        });
-      }
+      res.status(200).json(existingUser)
     }
+
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }

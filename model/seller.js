@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 const { isEmail, isStrongPassword } = require('validator');
 
 const sellerAddressSchema = new mongoose.Schema({
-  addressType: {
-    type: String,
-    required: true,
-    enum: ['home', 'work']
-  },
   name: {
     type: String
   },
