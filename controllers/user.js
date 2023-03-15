@@ -2,6 +2,8 @@ const UserService = require('../services/user');
 const userModel = require('../model/user');
 const bcrypt = require('bcrypt');
 const user = require('../model/user');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 let userService = new UserService();
