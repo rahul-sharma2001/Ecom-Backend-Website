@@ -2,18 +2,23 @@ const sellerModel = require('../model/seller');
 const userModel = require('../model/user');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 
+
+let transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  auth: {
+      user: '19ceusf036@ddu.ac.in',
+      pass: 'jaan1234'
+  }
+});
 class UserService {
   async createUser(userInfo) {
     try {
       if (!userInfo) {
         throw new Error('User details is required');
       }
-
-      const hashedPassword = await bcrypt.hash(userInfo.password, 10);
-      userInfo.password = hashedPassword;
-
       if (userInfo.role === 'user' || userInfo.role === 'admin') {
         const savedUser = await userModel.create(userInfo);
         return savedUser;
@@ -38,6 +43,15 @@ class UserService {
           };
 
           const savedSeller = await sellerModel.create(newSeller);
+          const token = jwt.sign({ sellerId: savedUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+          const resetUrl = `http://localhost:3000/reset-password/${token}`;
+          const mailOptions = {
+            from: '19ceusf036@ddu.ac.in',
+            to: userInfo.emailId,
+            subject: ' Password Reset',
+            html: `<p>Please click the following link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+          };
+          await transporter.sendMail(mailOptions);
           return savedSeller;
         } else {
           throw new Error('Address and Company Name Required');
