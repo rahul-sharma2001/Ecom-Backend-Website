@@ -15,6 +15,9 @@ let transporter = nodemailer.createTransport({
 });
 class UserService {
   async createUser(userInfo) {
+    const {password}= userInfo;
+    const hashedPassword = await bcrypt.hash(userInfo.password, 10);
+    userInfo.password = hashedPassword;
     try {
       if (!userInfo) {
         throw new Error('User details is required');
@@ -44,12 +47,12 @@ class UserService {
 
           const savedSeller = await sellerModel.create(newSeller);
           const token = jwt.sign({ sellerId: savedUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-          const resetUrl = `http://localhost:3000/reset-password/${token}`;
+          const resetUrl = `http://localhost:3000/set-password/${token}`;
           const mailOptions = {
             from: '19ceusf036@ddu.ac.in',
             to: userInfo.emailId,
-            subject: ' Password Reset',
-            html: `<p>Please click the following link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+            subject: ' set password',
+            html: `<p>hiii ${userInfo.firstName} ,</p><br><b>OTP:${password}</b><br><p>Please click the following link to set your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
           };
           await transporter.sendMail(mailOptions);
           return savedSeller;
@@ -120,6 +123,7 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
+      console.log(LoginUser)
       if (!LoginUser) {
         return {
           status: false,
@@ -130,7 +134,7 @@ class UserService {
           loginData.password,
           LoginUser.password
         );
-
+          console.log(matchPassword);
         if (!matchPassword) {
           return {
             status: false,
@@ -214,5 +218,5 @@ class UserService {
     }
   }
 }
-
+  
 module.exports = UserService;
