@@ -25,10 +25,8 @@ class AddressService {
                 throw new Error('Address id is required')
             }
             const updateAddress = await addressModel.findByIdAndUpdate(obj, updatedObj, options)
-            console.log("updateAddress = ", updateAddress)
 
             if(updateAddress){
-                console.log(updateAddress + " " + " service")
                 return updateAddress
             }else{
                 throw new Error('Address details are not updated')
@@ -64,7 +62,6 @@ class AddressService {
                 throw new Error('User id is required')
             }
             const addresByUserId = await addressModel.find(id)
-            console.log(addresByUserId + " "+ "address")
 
             if(addresByUserId){
                 return addresByUserId

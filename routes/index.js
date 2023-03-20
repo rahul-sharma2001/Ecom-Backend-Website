@@ -5,7 +5,11 @@ const categoryRoutes = require('./category');
 const reviewRoutes = require('./review');
 const addressRoutes = require('./address');
 const productRoutes = require('./product');
+<<<<<<< HEAD
 const sellerRoutes = require('./seller');
+=======
+const passwordRoutes=require('./password')
+>>>>>>> develop
 const orderRoutes = require('./order');
 const cartRoutes = require('./cart');
 const imageUpload = require('./imageUpload');
@@ -13,7 +17,11 @@ const wishlist = require('./wishlist');
 
 router.use('/user', userRoutes);
 router.use('/category', categoryRoutes);
+<<<<<<< HEAD
 router.use('/seller', sellerRoutes);
+=======
+router.use('/password',passwordRoutes);
+>>>>>>> develop
 router.use('/review', reviewRoutes);
 router.use('/product', productRoutes);
 router.use('/order', orderRoutes);
