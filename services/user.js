@@ -35,6 +35,8 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({emailId:loginData.emailId});
+      let modifiedObject = LoginUser
+
       if (!LoginUser) {
         return{
           status: false,
@@ -56,10 +58,12 @@ class UserService {
             { id: LoginUser._id },
             process.env.JWT_SECRET_KEY
           );
+          modifiedObject.password = null
           return {
             status: true,
             message: 'login successfull!',
-            token: jwtToken
+            token: jwtToken,
+            userData: modifiedObject
           };
         }
       }
