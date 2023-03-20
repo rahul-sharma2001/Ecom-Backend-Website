@@ -84,12 +84,8 @@ const deleteOrder = async (req, res) => {
 };
 const filterOrder = async (req,res)=>{
   try{
-    let queryObject = {
-      filter:req.body,
-      limit:req.query.limit,
-      offset:req.query.offset
-
-    }
+  
+    let queryObject = req.query;
     let filteredOrder = await orderServiceInstance.filterOrder(queryObject);
     if(filteredOrder){
       res.status(200).json({

@@ -116,12 +116,22 @@ class OrderService {
     }
   }
   async filterOrder(queryObject) {
-    let { filter, limit = 20, offset = 0 } = queryObject;
+    // let { filter, limit = 20, offset = 0 } = queryObject;
 
     let filterObj = {};
     const pipeline = [];
 
-    let { userId, _Id, paymentId, status, sellerId, category } = filter;
+    let {
+      userId,
+      _Id,
+      paymentId,
+      status,
+      sellerId,
+      limit = 20,
+      offset = 0
+    } = queryObject;
+    limit = (+limit)
+    offset = (+offset)
     if (userId) {
       filterObj['user.userId'] = userId;
     }
@@ -144,9 +154,6 @@ class OrderService {
       pipeline.push({
         $project: { totalAmount: 0 }
       });
-    }
-    if (category) {
-      filterObj['products.category'] = category;
     }
 
     pipeline.push({
