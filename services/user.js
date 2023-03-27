@@ -51,9 +51,34 @@ class UserService {
       if (!id) {
         throw new Error('User details is required');
       }
+      const getUser = await userModel.aggregate([
+        { $match: { _id: mongoose.Types.ObjectId(id) } },
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'sellerId',
+            as: 'sellerAdditionalData'
+          }
+        },
+        {
+          $unwind: {
+            path: '$sellerAdditionalData',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $project: {
+            password: 0
+          }
+        }
+      ]);
 
-      const getUser = await userModel.findOne(id).select('-password');
-      return getUser;
+      if (!getUser.length) {
+        throw new Error(`No user with id: ${id}`);
+      }
+      const userData = getUser[0];
+      return userData;
     } catch (error) {
       throw error;
     }
@@ -101,28 +126,30 @@ class UserService {
       if (!body) {
         throw new Error('User details is required');
       }
-      const { role, emailId, contactNumber } = body;
-
-      const userQuery = {};
-
+      const { role, search } = body;
+      const conditions = [];
+      if (search) {
+        conditions.push(
+          { emailId: { $regex: new RegExp(`^${search}`, 'i') } },
+          { contactNumber: { $regex: new RegExp(`^${search}`, 'i') } }
+        );
+      }
+      const pipeline = [];
       if (role) {
-        userQuery['role'] = { $regex: `^${role}` };
+        pipeline.push({
+          $match: {
+            role: { $regex: `^${role}` }
+          }
+        });
       }
-      if (emailId) {
-        userQuery['emailId'] = { $regex: `^${emailId}` };
+      if (conditions.length > 0) {
+        pipeline.push({
+          $match: {
+            $or: conditions
+          }
+        });
       }
-      if (contactNumber) {
-        userQuery['contactNumber'] = { $regex: `^${contactNumber}` };
-      }
-
-      const page = Number(body.page) || 1;
-      const limit = Number(body.limit) || 10;
-      const skip = (page - 1) * limit;
-
-      let allUsers = await userModel.aggregate([
-        {
-          $match: userQuery
-        },
+      pipeline.push(
         {
           $lookup: {
             from: 'sellers',
@@ -137,11 +164,13 @@ class UserService {
             preserveNullAndEmptyArrays: true
           }
         }
-      ]);
-
+      );
+      const page = Number(body.page) || 1;
+      const limit = Number(body.limit) || 10;
+      const skip = (page - 1) * limit;
+      let allUsers = await userModel.aggregate(pipeline);
       const count = allUsers.length;
       const filteredUsers = allUsers.slice(skip, skip + limit);
-
       if (filteredUsers) {
         return { count, filteredUsers };
       } else {
