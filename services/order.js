@@ -32,9 +32,9 @@ class OrderService {
       return null;
     }
     const orderList = await orderModel
-      .find({ 'user.userId': userId })
+      .find({$and:[{ 'user.userId': userId },{status:{$ne:'deleted'}}]})
       .skip(offset)
-      .limit(limit);
+      .limit(limit)
 
     if (!filter) {
       try {
@@ -160,6 +160,13 @@ class OrderService {
       $match: filterObj
     });
 
+    if(filterObj.status !== 'deleted'){
+      pipeline.push({
+        $match: {status:{$ne:'deleted'}}
+      });
+    }
+ 
+
     let filterOrder = await orderModel
       .aggregate(pipeline)
       .skip(offset)
@@ -178,6 +185,18 @@ class OrderService {
       return counterObj.orderIdCounter;
     } catch (err) {
       throw err;
+    }
+  }
+  async searchOrder(queryObject){
+    let {userId,search,limit=20,offset=0}= queryObject;
+    try{
+      let searchedOrders = await orderModel.find({$and:[{'user.userId':userId},{'products.name':
+        {$regex:search,$options:'i'}
+      }]}).skip(offset).limit(limit);
+      return searchedOrders;
+    }
+    catch(err){
+      throw(err)
     }
   }
 }
