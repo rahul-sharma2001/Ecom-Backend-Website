@@ -3,7 +3,7 @@ let userSchema = new mongoose.Schema({
 
   userId: {
     type: String,
-    required: [true, 'Must Provide User Id']
+    required: [true, 'Must Provide User Id'], 
   },
   name: { 
     type: String, 
@@ -83,13 +83,11 @@ let orderSchema = new mongoose.Schema({
     required: [true, 'Must Provide Order Status'] 
   }, 
   orderDate: {
-    type:String,
-    format:"date",
+    type:Date,
     require: [true,"Must Provide Order Date"]
   },
   deliveryDate: {
-    type:String,
-    format:"date",
+    type:Date,
     require: [true, "Must Provide deliveryDate"]
   },
   totalAmount: { 
