@@ -9,6 +9,9 @@ require('dotenv').config();
 let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
+  if(!user.role){
+    user.role="user"
+  }
   try {
 
     let addUser = await userService.createUser(user);

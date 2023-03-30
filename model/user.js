@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// import mongoose from 'mongoose';
 
 const { isEmail, isStrongPassword } = require('validator');
 
@@ -37,7 +38,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    trim: true,
+    required:[true,"must enter role"],
     enum: ['user', 'admin', 'seller']
   }
 });

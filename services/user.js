@@ -17,6 +17,7 @@ let transporter = nodemailer.createTransport({
 class UserService {
   async createUser(userInfo) {
     try {
+      console.log(userInfo)
       if (!userInfo) {
         throw new Error('User details is required');
       }
@@ -57,7 +58,8 @@ class UserService {
         } else {
           throw new Error('Address and Company Name Required');
         }
-      } else {
+      } 
+      else {
         throw new Error('only user or seller or admin can be created');
       }
     } catch (error) {
