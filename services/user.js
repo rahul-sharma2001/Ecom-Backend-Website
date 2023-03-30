@@ -6,16 +6,18 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 
-
 let transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: 'smtp.gmail.com',
   auth: {
-      user: '19ceusf036@ddu.ac.in',
-      pass: 'jaan1234'
+    user: '19ceusf036@ddu.ac.in',
+    pass: 'jaan1234'
   }
 });
 class UserService {
   async createUser(userInfo) {
+    const {password}= userInfo;
+    const hashedPassword = await bcrypt.hash(userInfo.password, 10);
+    userInfo.password = hashedPassword;
     try {
       console.log(userInfo)
       if (!userInfo) {
@@ -25,7 +27,6 @@ class UserService {
         const savedUser = await userModel.create(userInfo);
         return savedUser;
       } else if (userInfo.role === 'seller') {
-
         if (userInfo.address && userInfo.companyName) {
           const savedUser = await userModel.create(userInfo);
           const newSeller = {
@@ -46,12 +47,12 @@ class UserService {
 
           const savedSeller = await sellerModel.create(newSeller);
           const token = jwt.sign({ sellerId: savedUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-          const resetUrl = `http://localhost:3000/reset-password/${token}`;
+          const resetUrl = `http://localhost:3000/set-password/${token}`;
           const mailOptions = {
             from: '19ceusf036@ddu.ac.in',
             to: userInfo.emailId,
-            subject: ' Password Reset',
-            html: `<p>Please click the following link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+            subject: ' set password',
+            html: `<p>hiii ${userInfo.firstName} ,</p><br><b>OTP:${password}</b><br><p>Please click the following link to set your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
           };
           await transporter.sendMail(mailOptions);
           return savedSeller;
@@ -73,8 +74,34 @@ class UserService {
         throw new Error('User details is required');
       }
 
-      const getUser = await userModel.findOne(id).select('-password');
-      return getUser;
+      const getUser = await userModel.aggregate([
+        { $match: { _id: mongoose.Types.ObjectId(id) } },
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'sellerId',
+            as: 'sellerAdditionalData'
+          }
+        },
+        {
+          $unwind: {
+            path: '$sellerAdditionalData',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $project: {
+            password: 0
+          }
+        }
+      ]);
+
+      if (!getUser.length) {
+        throw new Error(`No user with id: ${id}`);
+      }
+      const userData = getUser[0];
+      return userData;
     } catch (error) {
       throw error;
     }
@@ -168,6 +195,7 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
+      console.log(LoginUser)
       if (!LoginUser) {
         return {
           status: false,
@@ -178,7 +206,7 @@ class UserService {
           loginData.password,
           LoginUser.password
         );
-
+          console.log(matchPassword);
         if (!matchPassword) {
           return {
             status: false,
@@ -205,53 +233,66 @@ class UserService {
     }
   }
 
-
   async getFilteredUsers(body) {
     try {
       if (!body) {
         throw new Error('User details is required');
       }
-      const { role, emailId, contactNumber } = body;
-
-      const userQuery = {};
-
+      const { role, search } = body;
+      const conditions = [];
+      if (search) {
+        conditions.push(
+          { emailId: { $regex: new RegExp(`^${search}`, 'i') } },
+          { contactNumber: { $regex: new RegExp(`^${search}`, 'i') } }
+        );
+      }
+      const pipeline = [];
       if (role) {
-        userQuery['role'] = { $regex: `^${role}` };
+        pipeline.push({
+          $match: {
+            role: { $regex: `^${role}` }
+          }
+        });
       }
-      if (emailId) {
-        userQuery['emailId'] = { $regex: `^${emailId}` };
+      if (conditions.length > 0) {
+        pipeline.push({
+          $match: {
+            $or: conditions
+          }
+        });
       }
-      if (contactNumber) {
-        userQuery['contactNumber'] = { $regex: `^${contactNumber}` };
+
+      if ('seller'.match(`^${role}`)) {
+        pipeline.push(
+          {
+            $lookup: {
+              from: 'sellers',
+              localField: '_id',
+              foreignField: 'sellerId',
+              as: 'sellerAdditionalData'
+            }
+          },
+          {
+            $unwind: {
+              path: '$sellerAdditionalData',
+              preserveNullAndEmptyArrays: true
+            }
+          }
+        );
       }
+
+      pipeline.push({
+        $project: {
+          password: 0
+        }
+      });
 
       const page = Number(body.page) || 1;
       const limit = Number(body.limit) || 10;
       const skip = (page - 1) * limit;
-
-      let allUsers = await userModel.aggregate([
-        {
-          $match: userQuery
-        },
-        {
-          $lookup: {
-            from: 'sellers',
-            localField: '_id',
-            foreignField: 'sellerId',
-            as: 'sellerAdditionalData'
-          }
-        },
-        {
-          $unwind: {
-            path: '$sellerAdditionalData',
-            preserveNullAndEmptyArrays: true
-          }
-        }
-      ]);
-
+      let allUsers = await userModel.aggregate(pipeline);
       const count = allUsers.length;
       const filteredUsers = allUsers.slice(skip, skip + limit);
-
       if (filteredUsers) {
         return { count, filteredUsers };
       } else {
@@ -262,5 +303,5 @@ class UserService {
     }
   }
 }
-
+  
 module.exports = UserService;

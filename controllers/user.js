@@ -36,7 +36,7 @@ const createUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    const user = await userService.getUser({ _id: userId });
+    const user = await userService.getUser(userId);
     if (!user) {
       return res
         .status(404)
@@ -118,5 +118,5 @@ module.exports = {
   deleteUser,
   updateUser,
   login,
-  getUsers
+  getUsers,
 };
