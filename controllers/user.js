@@ -1,14 +1,30 @@
 const UserService = require('../services/user');
 const userModel = require('../model/user');
-let userService = new UserService();
+const bcrypt = require('bcrypt');
+const user = require('../model/user');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
+let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
   try {
-    let adduser = await userService.createUser(user);
-    res
-      .status(200)
-      .json({ status: true, message: 'user created successfully!' });
+
+    let addUser = await userService.createUser(user);
+    if (addUser.role === 'user') {
+      res
+        .status(200)
+        .json({ status: true, message: 'User created successfully!' });
+    } else if (addUser.role === 'admin') {
+      res
+        .status(200)
+        .json({ status: true, message: 'Admin created successfully!' });
+    } else {
+      res
+        .status(200)
+        .json({ status: true, message: 'Seller created successfully!' });
+    }
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
@@ -17,12 +33,13 @@ const createUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    const user = await userService.getUser({ _id: userId });
+    const user = await userService.getUser(userId);
     if (!user) {
       return res
         .status(404)
         .json({ status: false, message: `no user with id: ${userId}` });
     }
+
     res.status(200).json({ status: true, user });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -45,7 +62,7 @@ const updateUser = async (req, res) => {
       .status(200)
       .json({ status: true, message: 'user updated successfully!' });
   } catch (error) {
-    res.status(500).json({ status: false, messagesg: error.message });
+    res.status(500).json({ status: false, message: error.message });
   }
 };
 
@@ -61,9 +78,42 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const existingUser = await userService.login({
+      emailId,
+      password,
+    });
+
+    if (existingUser.status == false) {
+      res.status(401).json(existingUser)
+    } else {
+      res.status(200).json(existingUser)
+    }
+
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};
+const getUsers = async (req, res) => {
+  try {
+    const users = await userService.getFilteredUsers(req.query);
+    if (users.length !== 0) {
+      res.status(200).json({ status: true, users });
+    } else {
+      res.status(500).json({ status: false, message: 'user not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getUser,
   deleteUser,
-  updateUser
+  updateUser,
+  login,
+  getUsers,
 };

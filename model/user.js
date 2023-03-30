@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const { isEmail, isStrongPassword } = require('validator');
 
 const userSchema = new mongoose.Schema({
@@ -18,17 +19,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'must provide email'],
     unique: true,
+    index: true,
     validate: [isEmail, ' PLEASE PROVIDE VALID EMAIL'],
     trim: true
   },
   password: {
     type: String,
     required: [true, 'must provide password'],
-    validate: [isStrongPassword, 'provide strong password']
+    //validate: [isStrongPassword, 'provide strong password']
   },
   contactNumber: {
     type: String,
-    unique: true,
+    index: true,
     required: [true, 'must provide contact-number'],
     minlength: 10,
     maxlength: [10, 'contact number should consist of 10 digits']
@@ -36,8 +38,8 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     trim: true,
-    default: 'user'
+    enum: ['user', 'admin', 'seller']
   }
 });
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('User', userSchema);
