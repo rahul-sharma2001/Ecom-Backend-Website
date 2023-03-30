@@ -199,6 +199,20 @@ class OrderService {
       throw(err)
     }
   }
+  async getOrderById({orderId}){
+    console.log(orderId)
+    if(!orderId){
+      throw new Error("order Id must be required");
+    }
+    try{
+      let order = await orderModel.find({_Id:orderId});
+      return order
+
+    }
+    catch(err){
+      throw (err);
+    }
+  }
 }
 function ZeroPadder(len, pad) {
   if (len === undefined) {

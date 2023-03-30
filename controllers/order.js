@@ -103,5 +103,52 @@ const filterOrder = async (req,res)=>{
     throw err;
   }
 }
+const searchOrder= async(req,res)=>{
+  try{
+    let queryObject= {
+      search : req.query.search,
+      userId : req.params.userId,
+      limit: req.query.limit,
+      offset: req.query.offset
+    }
+    let queryResult = await orderServiceInstance.searchOrder(queryObject);
+    if(queryResult )
+    {
+      res.status(200).json({
+        message:"Orders filtered Successfully",
+        count:queryResult.length,
+        details :queryResult
+      })
+    }else{
+      res.status(404).send("No orders found for specific search");
+    }
+  }
+  catch(err){
+    res.status(500).send("Server Error Cannot filter order");
+    throw err;
+  }
+}
+const getOrderById=async (req,res)=>{
+  try{
+    let order = await orderServiceInstance.getOrderById(req.params);
+    console.log(order)
+    if(order){
+      res.status(200).json({
+        message:"Order Fetched Successfully",
+        count:order.length,
+        details: order
+      })
+    }
+    else{
+      res.status(404).send("Order does not exist");
+    }
 
-module.exports = { getOrder, updateOrder, addOrder, deleteOrder ,filterOrder};
+  }
+  catch(err){
+    res.status(500).send("Server Error Cannot get Order")
+  }
+  
+
+}
+
+module.exports = { getOrder, updateOrder, addOrder, deleteOrder ,filterOrder,searchOrder,getOrderById};
