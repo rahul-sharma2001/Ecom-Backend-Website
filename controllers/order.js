@@ -131,7 +131,6 @@ const searchOrder= async(req,res)=>{
 const getOrderById=async (req,res)=>{
   try{
     let order = await orderServiceInstance.getOrderById(req.params);
-    console.log(order)
     if(order){
       res.status(200).json({
         message:"Order Fetched Successfully",

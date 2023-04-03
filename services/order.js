@@ -31,59 +31,32 @@ class OrderService {
     if (offset < 0 || limit < 0) {
       return null;
     }
-    const orderList = await orderModel
-      .find({$and:[{ 'user.userId': userId },{status:{$ne:'deleted'}}]})
-      .skip(offset)
-      .limit(limit)
-
-    if (!filter) {
-      try {
-        if (orderList.length != 0) {
+    try {
+      if(!filter){
+        const orderList = await orderModel
+        .find({$and:[{ 'user.userId': userId },{status:{$ne:'deleted'}}]})
+        .skip(offset)
+        .limit(limit)
+        
+        return orderList
+      }
+        if (filter === 'Last30') {
+          let currentDate = moment().format("MM/DD/YYYY")
+          let dateOlderThan30Days = moment().subtract(30,'days').calendar()
+          const orderList = await orderModel.find({$and:[{'user.userId':userId},{status:{$ne:'deleted'}},{$and:[{orderDate:{$gte:dateOlderThan30Days}},{orderDate:{$lte:currentDate}}]}]}).skip(offset).limit(limit)
+          return orderList
+        }
+        if (filter === 'Older'){
+          const orderList = await orderModel.find({$and:[{'user.userId':userId},{status:{$ne:'deleted'}},{orderDate:{$lt:'2020'}}]}).skip(offset).limit(limit);
           return orderList;
         }
-      } catch (err) {
-        throw new Error('Could not get Orders');
-      }
-    } else {
-      try {
-        if (orderList.length == 0) {
-          return null;
-        }
-
-        if (filter === 'Last30') {
-          let filteredOrders = orderList.filter(order => {
-            const diff = moment().diff(order.orderDate, 'day');
-            return diff <= 30;
-          });
-          return filteredOrders;
-        } else if (filter === 'Older') {
-          let filteredOrders = orderList.filter(order => {
-            let orderDateYear = moment(order.orderDate).format('YYYY');
-            if (orderDateYear < 2020) {
-              return order;
-            }
-          });
-          return filteredOrders;
-        } else if (
-          filter === '2023' ||
-          filter === '2022' ||
-          filter === '2021' ||
-          filter === '2020'
-        ) {
-          let filteredOrder = orderList.filter(order => {
-            let orderDateYear = moment(order.orderDate).format('YYYY');
-            if (orderDateYear === filter) {
-              return order;
-            }
-          });
-          return filteredOrder;
-        } else {
-          return null;
+        if (filter === '2023' || filter === '2022' || filter === '2021' || filter === '2020'){
+          const orderList = await orderModel.find({$and:[{'user.userId':userId},{status:{$ne:'deleted'}},{orderDate:{$gte:filter+'-01-01T00:00:00.00+00:00',$lte:filter+'-12-31T23:59:59.00+00:00'}}]}).skip(offset).limit(limit);
+          return orderList;
         }
       } catch (err) {
         throw err;
       }
-    }
   }
 
   async updateOrder(order) {
