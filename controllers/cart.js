@@ -1,5 +1,7 @@
 const CartService = require('../services/cart')
 const cartService = new CartService();
+const uuid = require('uuid')
+const { ObjectId } = require('mongodb');
 
 async function createCart(req, res) {
     try {
@@ -130,7 +132,7 @@ async function addProduct(req, res) {
             }
         )
 
-        res.status(500).json({
+        res.status(200).json({
             status: true,
             message: "product add successfully"
         })
@@ -143,6 +145,17 @@ async function addProduct(req, res) {
         })
     }
 }
+function generateTemporaryUserId() {
+    my_uuid = uuid.v4()
+    const tempId = ObjectId(my_uuid.hex)
+    return tempId
+  }
+  function createTemporaryUserId(req, res) {
+    const temporayUserId = generateTemporaryUserId();
+    res.json({ userId: temporayUserId });
+  }
+
+  
 
 
 
@@ -153,4 +166,5 @@ module.exports = {
     updateQtyInCart,
     deleteProduct,
     addProduct,
+    createTemporaryUserId
 }

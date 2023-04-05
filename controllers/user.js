@@ -9,6 +9,9 @@ require('dotenv').config();
 let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
+  if(!user.role){
+    user.role="user"
+  }
   try {
 
     let addUser = await userService.createUser(user);
@@ -26,7 +29,7 @@ const createUser = async (req, res) => {
         .json({ status: true, message: 'Seller created successfully!' });
     }
   } catch (error) {
-    res.status(500).json({ status: false, message: error.message });
+    res.status(404).json({ status: false, message: error.message });
   }
 };
 

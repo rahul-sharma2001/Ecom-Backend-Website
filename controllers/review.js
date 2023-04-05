@@ -8,7 +8,7 @@ const createReview = async (req, res) => {
     let adduser = await reviewServiceInstance.createReview(review);
     res
       .status(200)
-      .json({ status: true, message: 'review created successfully!' });
+      .json({ status: true, message: 'review created successfully!',review:adduser });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }

@@ -1,5 +1,6 @@
 const sellerModel = require('../model/seller');
 const userModel = require('../model/user');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -18,6 +19,7 @@ class UserService {
     const hashedPassword = await bcrypt.hash(userInfo.password, 10);
     userInfo.password = hashedPassword;
     try {
+      console.log(userInfo)
       if (!userInfo) {
         throw new Error('User details is required');
       }
@@ -57,13 +59,15 @@ class UserService {
         } else {
           throw new Error('Address and Company Name Required');
         }
-      } else {
+      } 
+      else {
         throw new Error('only user or seller or admin can be created');
       }
     } catch (error) {
       throw error;
     }
   }
+
   async getUser(id) {
     try {
       if (!id) {
@@ -102,6 +106,50 @@ class UserService {
       throw error;
     }
   }
+
+  async login(loginData){
+    try {
+      if (!loginData) {
+        throw new Error('User details is required');
+      }
+      const LoginUser = await userModel.findOne({emailId:loginData.emailId});
+      let modifiedObject = LoginUser
+
+      if (!LoginUser) {
+        return{
+          status: false,
+          message: 'invalid emailId or password'
+        };
+      } else {
+        const matchPassword = await bcrypt.compare(
+          loginData.password,
+          LoginUser.password
+        );
+        
+        if (!matchPassword) {
+          return{
+            status: false,
+            message: 'invalid emailId or password'
+          };
+        } else {
+          const jwtToken = jwt.sign(
+            { id: LoginUser._id },
+            process.env.JWT_SECRET_KEY
+          );
+          modifiedObject.password = null
+          return {
+            status: true,
+            message: 'login successfull!',
+            token: jwtToken,
+            userData: modifiedObject
+          };
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateUser(id, update, opts) {
     try {
       if (!id) {
