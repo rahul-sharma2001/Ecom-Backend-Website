@@ -1,5 +1,6 @@
 const sellerModel = require('../model/seller');
 const userModel = require('../model/user');
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
@@ -14,7 +15,11 @@ let transporter = nodemailer.createTransport({
 });
 class UserService {
   async createUser(userInfo) {
+    const {password}= userInfo;
+    const hashedPassword = await bcrypt.hash(userInfo.password, 10);
+    userInfo.password = hashedPassword;
     try {
+      console.log(userInfo)
       if (!userInfo) {
         throw new Error('User details is required');
       }
@@ -41,30 +46,28 @@ class UserService {
           };
 
           const savedSeller = await sellerModel.create(newSeller);
-          const token = jwt.sign(
-            { sellerId: savedUser._id },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: '1h' }
-          );
-          const resetUrl = `http://localhost:3000/reset-password/${token}`;
+          const token = jwt.sign({ sellerId: savedUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+          const resetUrl = `http://localhost:3000/set-password/${token}`;
           const mailOptions = {
             from: '19ceusf036@ddu.ac.in',
             to: userInfo.emailId,
-            subject: ' Password Reset',
-            html: `<p>Please click the following link to reset your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+            subject: ' set password',
+            html: `<p>hiii ${userInfo.firstName} ,</p><br><b>OTP:${password}</b><br><p>Please click the following link to set your password:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
           };
           await transporter.sendMail(mailOptions);
           return savedSeller;
         } else {
           throw new Error('Address and Company Name Required');
         }
-      } else {
+      } 
+      else {
         throw new Error('only user or seller or admin can be created');
       }
     } catch (error) {
       throw error;
     }
   }
+
   async getUser(id) {
     try {
       if (!id) {
@@ -103,6 +106,50 @@ class UserService {
       throw error;
     }
   }
+
+  async login(loginData){
+    try {
+      if (!loginData) {
+        throw new Error('User details is required');
+      }
+      const LoginUser = await userModel.findOne({emailId:loginData.emailId});
+      let modifiedObject = LoginUser
+
+      if (!LoginUser) {
+        return{
+          status: false,
+          message: 'invalid emailId or password'
+        };
+      } else {
+        const matchPassword = await bcrypt.compare(
+          loginData.password,
+          LoginUser.password
+        );
+        
+        if (!matchPassword) {
+          return{
+            status: false,
+            message: 'invalid emailId or password'
+          };
+        } else {
+          const jwtToken = jwt.sign(
+            { id: LoginUser._id },
+            process.env.JWT_SECRET_KEY
+          );
+          modifiedObject.password = null
+          return {
+            status: true,
+            message: 'login successfull!',
+            token: jwtToken,
+            userData: modifiedObject
+          };
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateUser(id, update, opts) {
     try {
       if (!id) {
@@ -148,7 +195,11 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
+<<<<<<< HEAD
 
+=======
+      console.log(LoginUser)
+>>>>>>> develop
       if (!LoginUser) {
         return {
           status: false,
@@ -159,7 +210,7 @@ class UserService {
           loginData.password,
           LoginUser.password
         );
-
+          console.log(matchPassword);
         if (!matchPassword) {
           return {
             status: false,
@@ -256,5 +307,5 @@ class UserService {
     }
   }
 }
-
+  
 module.exports = UserService;

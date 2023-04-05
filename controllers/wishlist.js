@@ -49,6 +49,7 @@ const addProduct = async (req, res) => {
   try {
     const { userId } = req.params;
     const { product } = req.body;
+    console.log(userId,product)
     const updatedWishlistData = await wishlistServices.addProduct({
       userId,
       product
