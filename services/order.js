@@ -2,6 +2,7 @@ const orderModel = require('../model/order');
 const moment = require('moment/moment');
 const counterModel = require('../model/counters');
 const config = require('../constants/config');
+const mongoose = require('mongoose');
 let padderObj = new ZeroPadder(5);
 
 class OrderService {
@@ -56,14 +57,14 @@ class OrderService {
         }
       } catch (err) {
         throw err;
-      }
+      } 
   }
 
   async updateOrder(order) {
     try {
-      let { status, orderDate, deliveryDate } = order;
+      let { status, orderDate, deliveryDate,_Id } = order;
       let updatedOrder = await orderModel.findOneAndUpdate(
-        { _Id: order._Id },
+        { _Id: _Id },
         {
           $set: {
             status,
@@ -80,20 +81,18 @@ class OrderService {
       throw err;
     }
   }
-  async deleteOrder(order) {
+  async deleteOrder({orderId}) {
     try {
-      let deletedOrder = await orderModel.findOneAndDelete({ _Id: order._Id });
+      let deletedOrder = await orderModel.findOneAndDelete({ _Id: orderId });
       return deletedOrder;
     } catch (err) {
       throw err;
     }
   }
   async filterOrder(queryObject) {
-    // let { filter, limit = 20, offset = 0 } = queryObject;
 
     let filterObj = {};
     const pipeline = [];
-
     let {
       userId,
       _Id,
@@ -106,19 +105,19 @@ class OrderService {
     limit = (+limit)
     offset = (+offset)
     if (userId) {
-      filterObj['user.userId'] = userId;
+      filterObj['user.userId'] =mongoose.Types.ObjectId(userId);
     }
     if (_Id) {
       filterObj['_Id'] = _Id;
     }
     if (paymentId) {
-      filterObj['paymentId'] = paymentId;
+      filterObj['paymentId'] = mongoose.Types.ObjectId(paymentId)
     }
     if (status) {
       filterObj['status'] = status;
     }
     if (sellerId) {
-      filterObj['products.sellerId'] = sellerId;
+      filterObj['products.sellerId'] =sellerId
 
       pipeline.push({
         $unwind: { path: '$products' }
@@ -173,7 +172,6 @@ class OrderService {
     }
   }
   async getOrderById({orderId}){
-    console.log(orderId)
     if(!orderId){
       throw new Error("order Id must be required");
     }
