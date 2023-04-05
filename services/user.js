@@ -195,7 +195,11 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
+<<<<<<< HEAD
+
+=======
       console.log(LoginUser)
+>>>>>>> develop
       if (!LoginUser) {
         return {
           status: false,

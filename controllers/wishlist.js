@@ -66,6 +66,7 @@ const addProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const { userId, productId } = req.params;
+
     const deleteProduct = await wishlistServices.deleteProductFromWishlist({
       userId,
       productId
