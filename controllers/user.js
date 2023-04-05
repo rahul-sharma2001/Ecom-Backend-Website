@@ -10,7 +10,6 @@ let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
   try {
-
     let addUser = await userService.createUser(user);
     if (addUser.role === 'user') {
       res
@@ -83,15 +82,14 @@ const login = async (req, res) => {
     const { emailId, password } = req.body;
     const existingUser = await userService.login({
       emailId,
-      password,
+      password
     });
 
     if (existingUser.status == false) {
-      res.status(401).json(existingUser)
+      res.status(401).json(existingUser);
     } else {
-      res.status(200).json(existingUser)
+      res.status(200).json(existingUser);
     }
-
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
