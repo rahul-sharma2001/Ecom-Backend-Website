@@ -18,7 +18,6 @@ class UserService {
         const savedUser = await userModel.create(userInfo);
         return savedUser;
       } else if (userInfo.role === 'seller') {
-
         if (userInfo.address && userInfo.companyName) {
           const savedUser = await userModel.create(userInfo);
           const newSeller = {
@@ -143,7 +142,6 @@ class UserService {
     }
   }
 
-
   async getFilteredUsers(body) {
     try {
       if (!body) {
@@ -198,6 +196,21 @@ class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getupdatedId({ userId, cartProductsInTempId }) {
+    console.log(userId, cartProductsInTempId);
+
+    if (!userId || !cartProductsInTempId) {
+      throw new Error('Required fields = userId, cartProductsInTempId');
+    }
+
+    const updatedData = await userModel.findOneAndUpdate(
+       {_id:userId} ,
+      { $set: {  cartProductsInTempId } },
+      { new: true, runValidators: true } 
+    );
+    return updatedData;
   }
 }
 

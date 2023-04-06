@@ -6,6 +6,7 @@ const routers = require('./routes/index');
 const productRouters = require('./routes/product');
 require('dotenv').config();
 const config = require('./constants/config');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = process.env.PORT || config.SERVER_PORT;
 
@@ -15,6 +16,7 @@ const port = process.env.PORT || config.SERVER_PORT;
 app.use(cors());
 app.use(express.static('public'));
 app.use(morgan('dev'));
+app.use(cookieParser())
 
 
 mongoose.set('strictQuery', false);

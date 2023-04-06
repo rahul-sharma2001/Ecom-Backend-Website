@@ -38,8 +38,13 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     trim: true,
-    enum: ['user', 'admin', 'seller']
-  }
+    enum: ['user', 'admin', 'seller'],
+    required:[true,"must provide role"]
+  },
+  cartProductsInTempId:{  
+    type: mongoose.Schema.Types.ObjectId,
+    default: null 
+  } 
 });
 
 module.exports = mongoose.model('User', userSchema);

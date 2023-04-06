@@ -5,7 +5,9 @@ const {
     deleteCart,
     updateQtyInCart,
     deleteProduct,
-    addProduct
+    addProduct, 
+    createTemporaryUserId,
+    handleBuyNow,
 } = require('../controllers/cart');
 const router = express.Router();
 
@@ -15,5 +17,9 @@ router.delete('/:userId', deleteCart)
 router.patch('/:userId/:productId/:variantId', updateQtyInCart)
 router.delete('/:userId/:productId/:variantId', deleteProduct)
 router.patch('/:userId', addProduct)
+router.post('/guest', createTemporaryUserId )
+router.get('/handleBuyNow/:userId/:tempId',handleBuyNow )
+
 
 module.exports = router;
+    
