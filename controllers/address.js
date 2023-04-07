@@ -43,7 +43,8 @@ const createAddress = async (req, res) => {
       .status(201)
       .send({ status: true, message: 'Successfully address created' });
   } catch (err) {
-    res.status(500).json({ status: false, message: `error == ${err}` });
+    console.log(err);
+    res.status(500).json({ status: false, message: err });
   }
 };
 
