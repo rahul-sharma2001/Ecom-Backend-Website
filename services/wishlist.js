@@ -20,6 +20,9 @@ class WishlistService {
         throw new Error('userId is required');
       }
       const getWishlist = await WishlistModel.findOne({ userId: id });
+      if (getWishlist === null) {
+        return 'no data with this id';
+      }
       return getWishlist;
     } catch (error) {
       throw error;
