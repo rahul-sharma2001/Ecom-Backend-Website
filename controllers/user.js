@@ -9,15 +9,17 @@ require('dotenv').config();
 let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
-  if(!user.role){
-    user.role="user"
+
+  if (!user.role) {
+    user.role = 'user';
   }
   try {
     let addUser = await userService.createUser(user);
+
     if (addUser.role === 'user') {
       res
         .status(200)
-        .json({ status: true, message: 'User created successfully!' });
+        .json({ status: true, message: '  User created successfully!' });
     } else if (addUser.role === 'admin') {
       res
         .status(200)
@@ -110,6 +112,22 @@ const getUsers = async (req, res) => {
   }
 };
 
+const updateId = async (req, res) => {
+  const { cartProductsInTempId } = req.body;
+  const { userId } = req.params;
+  console.log("userId: ",userId, "cartProductsInTempId: ",cartProductsInTempId)
+  try {
+    const updatedId = await userService.getupdatedId({
+      userId,
+      cartProductsInTempId
+    });
+    console.log(updatedId);
+    res.status(200).json({ status: true, data: updatedId });
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getUser,
@@ -117,4 +135,5 @@ module.exports = {
   updateUser,
   login,
   getUsers,
+  updateId
 };
