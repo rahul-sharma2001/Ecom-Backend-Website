@@ -2,8 +2,8 @@ let mongoose = require('mongoose');
 let userSchema = new mongoose.Schema({
 
   userId: {
-    type: String,
-    required: [true, 'Must Provide User Id']
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, 'Must Provide User Id'], 
   },
   name: { 
     type: String, 
@@ -18,87 +18,134 @@ let userSchema = new mongoose.Schema({
     required: [true, 'Must Provide Contact No'] 
   }
 });
-
-let productSchema = new mongoose.Schema({
-  productId: { 
-    type: String, 
-    required: [true, 'Must Provide Product Id'] 
-  },
-  sellerId: { 
-    type: String, 
-    required: [true, 'Must Provide Seller Id']
-  },
-  price: { 
-    type: Number, 
-    required: [true, 'Must Provide price'] 
-  },
-  quantity: { 
-    type: Number, 
-    required: [true, 'Must Provide quantity'] 
-  },
-  category: {
+let addressSchema = new mongoose.Schema({
+  residenceNo:{
     type:String,
+    required:[true,"Must Provide residence No"]
+  },
+  residenceName:{
+    type:String,
+    required:[true,"Must Provide residence Name"]
+  },
+  street:{
+    type:String,
+    required:[true,"Must Provide street"]
+  },
+  area:{
+    type:String,
+    required:[true,"Must Provide area"]
+  },
+  city:{
+    type:String,
+    required:[true,"Must Provide city"]
+  },
+  state:{
+    type:String,
+    required:[true,"Must Provide state"]
+  },
+  country:{
+    type:String,
+    required:[true,"Must Provide country"]
+  },
+})
+let productSchema = new mongoose.Schema({
+  sellerId: {
+    type: String
   },
   name: {
-    type:String,
+    type: String,
+    required: [true, 'must provide product name']
   },
-  ProductDetails: {
-    type:Object
+  image: {
+    type: String,
+    require: true
+  },
+  brand: {
+    type: String,
+    require: true
+  },
+  productDetails: {
+    type: Object
+  },
+  category: {
+    type: String,
+    required: [true, 'must provide category of product'],
+    trim: true
+  },
+});
+const variantSchema = new mongoose.Schema({
+  variantId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
   images: {
-    type:[String]
+    type: [String]
   },
-  variant: {
-    type:String,
+  price: {
+    type: Number,
+    required: true
+  },
+  size: {
+    type: String,
+    required: true
+  },
+  color: {
+    type: String,
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: [0, 'not available this quantity which you entered']
   }
 });
 let orderSchema = new mongoose.Schema({
-  
-
-  _Id: { 
-    type: String 
+  _Id: {
+    type: String
   },
-  user: { 
-    type: userSchema, 
-    required: [true, 'Must Provide user'] 
+  user: {
+    type: userSchema,
+    required: [true, 'Must Provide user']
   },
   products: {
     type: [productSchema],
     required: [true, 'Must Provide List of Products']
   },
-  paymentId: { 
-    type: String, 
-    required: [true, 'Must Provide Payment Id'] 
+  paymentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, 'Must Provide Payment Id']
   },
   billingAddress: {
-    type: Object,
+    type: addressSchema,
     required: [true, 'Must Provide Billing Address']
   },
   shippingAddress: {
-    type: Object,
+    type: addressSchema,
     required: [true, 'Must provide shipping address']
   },
-  status: { 
-    type: String, 
-    required: [true, 'Must Provide Order Status'] 
-  }, 
+  status: {
+    type: String,
+    required: [true, 'Must Provide Order Status']
+  },
   orderDate: {
-    type:String,
-    format:"date",
-    require: [true,"Must Provide Order Date"]
+    type: Date,
+    require: [true, 'Must Provide Order Date']
   },
   deliveryDate: {
-    type:String,
-    format:"date",
-    require: [true, "Must Provide deliveryDate"]
+    type: Date,
+    require: [true, 'Must Provide deliveryDate']
   },
-  totalAmount: { 
-    type: Number, 
-    required: [true, 'Must Provide totalAmount'] 
+  totalAmount: {
+    type: Number,
+    required: [true, 'Must Provide totalAmount']
   },
   shippingCharge: {
     type: Number,
     required: [true, 'Must Provide shipping charge']
+  },
+  variant:{
+    type:[variantSchema],
+    required: [true, "Must provide variant"]
   }
 });
 

@@ -5,15 +5,16 @@ const categoryRoutes = require('./category');
 const reviewRoutes = require('./review');
 const addressRoutes = require('./address');
 const productRoutes = require('./product');
-const passwordRoutes=require('./password')
+const passwordRoutes = require('./password');
 const orderRoutes = require('./order');
 const cartRoutes = require('./cart');
 const imageUpload = require('./imageUpload');
 const offersRoutes = require('./offers')
+const wishlist = require('./wishlist');
 
 router.use('/user', userRoutes);
 router.use('/category', categoryRoutes);
-router.use('/password',passwordRoutes);
+router.use('/password', passwordRoutes);
 router.use('/review', reviewRoutes);
 router.use('/product', productRoutes);
 router.use('/order', orderRoutes);
@@ -21,5 +22,6 @@ router.use('/cart', cartRoutes);
 router.use('/address', addressRoutes);
 router.use('/imageUpload', imageUpload);
 router.use('/offers',offersRoutes )
+router.use('/wishlist', wishlist);
 
 module.exports = router;

@@ -9,13 +9,17 @@ require('dotenv').config();
 let userService = new UserService();
 const createUser = async (req, res) => {
   const user = req.body;
-  try {
 
+  if (!user.role) {
+    user.role = 'user';
+  }
+  try {
     let addUser = await userService.createUser(user);
+
     if (addUser.role === 'user') {
       res
         .status(200)
-        .json({ status: true, message: 'User created successfully!' });
+        .json({ status: true, message: '  User created successfully!' });
     } else if (addUser.role === 'admin') {
       res
         .status(200)
@@ -26,14 +30,14 @@ const createUser = async (req, res) => {
         .json({ status: true, message: 'Seller created successfully!' });
     }
   } catch (error) {
-    res.status(500).json({ status: false, message: error.message });
+    res.status(404).json({ status: false, message: error.message });
   }
 };
 
 const getUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    const user = await userService.getUser({ _id: userId });
+    const user = await userService.getUser(userId);
     if (!user) {
       return res
         .status(404)
@@ -83,15 +87,14 @@ const login = async (req, res) => {
     const { emailId, password } = req.body;
     const existingUser = await userService.login({
       emailId,
-      password,
+      password
     });
 
     if (existingUser.status == false) {
-      res.status(401).json(existingUser)
+      res.status(401).json(existingUser);
     } else {
-      res.status(200).json(existingUser)
+      res.status(200).json(existingUser);
     }
-
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
@@ -109,11 +112,28 @@ const getUsers = async (req, res) => {
   }
 };
 
+const updateId = async (req, res) => {
+  const { cartProductsInTempId } = req.body;
+  const { userId } = req.params;
+  console.log("userId: ",userId, "cartProductsInTempId: ",cartProductsInTempId)
+  try {
+    const updatedId = await userService.getupdatedId({
+      userId,
+      cartProductsInTempId
+    });
+    console.log(updatedId);
+    res.status(200).json({ status: true, data: updatedId });
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getUser,
   deleteUser,
   updateUser,
   login,
-  getUsers
+  getUsers,
+  updateId
 };

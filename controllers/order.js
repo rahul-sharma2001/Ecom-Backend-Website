@@ -11,11 +11,15 @@ const getOrder = async (req, res) => {
       limit: req.query.limit,
       filter: req.query.filter
     };
-
-    let orderlist = await orderServiceInstance.getOrders(queryObject);
-
-    if (orderlist) {
-      res.status(200).json(orderlist);
+    let orderList = await orderServiceInstance.getOrders(queryObject);
+    if (orderList) {
+      res.status(200).json(
+        {
+          message:"Order Fetched Successfully",
+          count:orderList.length,
+          details:orderList
+        }
+      );
     } else {
       res
         .status(404)
@@ -78,5 +82,72 @@ const deleteOrder = async (req, res) => {
     throw err;
   }
 };
+const filterOrder = async (req,res)=>{
+  try{
+  
+    let queryObject = req.query;
+    let filteredOrder = await orderServiceInstance.filterOrder(queryObject);
+    if(filteredOrder){
+      res.status(200).json({
+        message:"Orders filtered Successfully",
+        count:filteredOrder.length,
+        details :filteredOrder
+      })
+    }
+    else{
+      res.status(404).send("Filter is invalid");
+    }
+  }
+  catch(err){
+    res.status(500).send("Server Error Cannot filter order");
+    throw err;
+  }
+}
+const searchOrder= async(req,res)=>{
+  try{
+    let queryObject= {
+      search : req.query.search,
+      userId : req.params.userId,
+      limit: req.query.limit,
+      offset: req.query.offset
+    }
+    let queryResult = await orderServiceInstance.searchOrder(queryObject);
+    if(queryResult )
+    {
+      res.status(200).json({
+        message:"Orders filtered Successfully",
+        count:queryResult.length,
+        details :queryResult
+      })
+    }else{
+      res.status(404).send("No orders found for specific search");
+    }
+  }
+  catch(err){
+    res.status(500).send("Server Error Cannot filter order");
+    throw err;
+  }
+}
+const getOrderById=async (req,res)=>{
+  try{
+    let order = await orderServiceInstance.getOrderById(req.params);
+    if(order){
+      res.status(200).json({
+        message:"Order Fetched Successfully",
+        count:order.length,
+        details: order
+      })
+    }
+    else{
+      res.status(404).send("Order does not exist");
+    }
 
-module.exports = { getOrder, updateOrder, addOrder, deleteOrder };
+  }
+  catch(err){
+    res.status(500).send("Server Error Cannot get Order")
+  }
+  
+
+}
+
+module.exports = { getOrder, updateOrder, addOrder, deleteOrder ,filterOrder,searchOrder,getOrderById};

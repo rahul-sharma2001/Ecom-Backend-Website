@@ -43,7 +43,8 @@ const createAddress = async (req, res) => {
       .status(201)
       .send({ status: true, message: 'Successfully address created' });
   } catch (err) {
-    res.status(500).json({ status: false, message: `error == ${err}` });
+    console.log(err);
+    res.status(500).json({ status: false, message: err });
   }
 };
 
@@ -69,10 +70,26 @@ const updateAddress = async (req, res) => {
     res.status(500).json({ status: false, message: `error == ${err}` });
   }
 };
-
+const deleteUserAddressByAddressId = async (req, res) => {
+  try {
+    const { userId: userId, id: addressId } = req.params;
+    const deleteAddress =
+      await addressServiceInstance.deleteUserAddressByAddressId({
+        userId: userId,
+        id: addressId
+      });
+    res.status(200).json({
+      status: true,
+      message: 'address deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};
 const deleteAddress = async (req, res) => {
   try {
     const { id: addressId } = req.params;
+
     const deletedAddress = await addressServiceInstance.deleteAddress({
       _id: addressId
     });
@@ -114,5 +131,6 @@ module.exports = {
   createAddress,
   updateAddress,
   deleteAddress,
-  findAddressByUserId
+  findAddressByUserId,
+  deleteUserAddressByAddressId
 };

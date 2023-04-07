@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cartVariant = new mongoose.Schema({
+const wishlistVariant = new mongoose.Schema({
   variantId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
@@ -19,15 +19,9 @@ const cartVariant = new mongoose.Schema({
   color: {
     type: String,
     required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: [0, 'not available this quantity which you entered']
   }
 });
-
-const cartProduct = new mongoose.Schema({
+const wishlistProduct = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -37,30 +31,20 @@ const cartProduct = new mongoose.Schema({
     type: String,
     trim: true
   },
+  brand: {
+    type: String,
+    trim: true
+  },
   name: {
     type: String,
     required: true,
     trim: true
   },
-  brand: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  productDetails: {
-    type: Object
-  },
-  image: {
-    type: String
-  },
-  selectedVariants: {
-    type: [cartVariant],
-    validate: [val => val.length > 0, 'at least select one variant']
+  selectedVarient: {
+    type: [wishlistVariant]
   }
 });
-
-// --> why reference not working in userId--------------------------problem------------
-const Cart = new mongoose.Schema({
+const Wishlist = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -68,10 +52,9 @@ const Cart = new mongoose.Schema({
     unique: true
   },
   products: {
-    type: [cartProduct],
+    type: [wishlistProduct],
     required: true,
     validate: [val => val.length > 0, 'at least select one product']
   }
 });
-
-module.exports = mongoose.model('Cart', Cart);
+module.exports = mongoose.model('Wishlist', Wishlist);
