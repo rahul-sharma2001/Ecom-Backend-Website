@@ -9,6 +9,7 @@ const passwordRoutes=require('./password')
 const orderRoutes = require('./order');
 const cartRoutes = require('./cart');
 const imageUpload = require('./imageUpload');
+const offersRoutes = require('./offers')
 
 router.use('/user', userRoutes);
 router.use('/category', categoryRoutes);
@@ -19,5 +20,6 @@ router.use('/order', orderRoutes);
 router.use('/cart', cartRoutes);
 router.use('/address', addressRoutes);
 router.use('/imageUpload', imageUpload);
+router.use('/offers',offersRoutes )
 
 module.exports = router;

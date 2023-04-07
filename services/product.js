@@ -15,62 +15,136 @@ class ProductService {
     }
   }
 
+  // async GetAllProduct(body) {
+  //   const {
+  //     name,
+  //     sort,
+  //     fields,
+  //     gender,
+  //     category,
+  //     brand,
+  //     maxPrice,
+  //     minPrice,
+  //     color,
+  //     availability,
+  //     sellerId
+  //   } = body;
+
+  //   const productQuery = {};
+
+  //   if (sellerId) {
+  //     productQuery.sellerId = sellerId;
+  //   }
+  //   if (name) {
+  //     productQuery.name = name;
+  //   }
+  //   if (gender) {
+  //     productQuery['productDetails.gender'] = gender;
+  //   }
+  //   if (brand) {
+  //     productQuery['productDetails.brand'] = brand;
+  //   }
+  //   if (category) {
+  //     productQuery.category = category;
+  //   }
+  //   if (color) {
+  //     productQuery['variants.color'] = color;
+  //   }
+  //   let products = productSchema.find(productQuery);
+  //   if (sort) {
+  //     const sortList = sort.split(',').join(' ');
+  //     products = products.sort(sortList);
+  //   }
+  //   if (fields) {
+  //     const fieldList = fields.split(',').join(' ');
+  //     products = products.select(fieldList);
+  //   }
+  //   if (maxPrice || minPrice) {
+  //   }
+  //   if (availability) {
+  //     products = products.find({ 'variants.noOfProducts': { $gt: 0 } });
+  //   }
+  //   const page = Number(body.page) || 1;
+  //   const limit = Number(body.limit) || 24;
+  //   const skip = (page - 1) * limit;
+  //   products = products.skip(skip).limit(limit);
+  //   const filterProduct = await products;
+  //   return filterProduct;
+  // }
+
+
   async GetAllProduct(body) {
-    const {
-      name,
-      sort,
-      fields,
-      gender,
-      category,
-      brand,
-      maxPrice,
-      minPrice,
-      color,
-      availability,
-      sellerId
-    } = body;
-
-    const productQuery = {};
-
+    const { name, sort, fields, gender, category, brand, maxPrice, minPrice, color, availability, sellerId, search, isAdminSide = 'false' } = body;
+    const conditions = [];
+    if (search) {
+        conditions.push(
+            { 'name': { $regex: new RegExp(`^${search}`, "i") } },
+            { 'brand': { $regex: new RegExp(`^${search}`, "i") } }
+        )
+    }
+    const pipeline = [];
+    const project = {
+        _id: 1,
+        sellerId: 1,
+        name: 1,
+        image: 1,
+        brand: 1,
+        productDetails: 1,
+        category: 1,
+    }
+    const matchQuery = {}
+    if (isAdminSide === 'true') {
+        pipeline.push({
+            $unwind: { path: "$variants" }
+        })
+        project['variant'] = '$variants'
+    }
+    else {
+        project['variants'] = 1
+        matchQuery['variants']= { $gt: 0 };
+    }
     if (sellerId) {
-      productQuery.sellerId = sellerId;
+        matchQuery['sellerId']= sellerId;
+        pipeline.push({
+            $match: matchQuery
+        })
     }
-    if (name) {
-      productQuery.name = name;
+    if (conditions.length > 0) {
+        pipeline.push({
+            $match: {
+                $or: conditions
+            }
+        })
     }
-    if (gender) {
-      productQuery['productDetails.gender'] = gender;
-    }
-    if (brand) {
-      productQuery['productDetails.brand'] = brand;
-    }
-    if (category) {
-      productQuery.category = category;
-    }
-    if (color) {
-      productQuery['variants.color'] = color;
-    }
-    let products = productSchema.find(productQuery);
+    pipeline.push({
+        $project: project
+    })
+    let products = productSchema.aggregate(pipeline);
+    const totalProducts = (await products).length;
     if (sort) {
-      const sortList = sort.split(',').join(' ');
-      products = products.sort(sortList);
+        const sortList = sort.split(',').join(' ');
+        products = products.sort(sortList);
     }
     if (fields) {
-      const fieldList = fields.split(',').join(' ');
-      products = products.select(fieldList);
+        const fieldList = fields.split(',').join(' ');
+        products = products.select(fieldList);
     }
     if (maxPrice || minPrice) {
     }
     if (availability) {
-      products = products.find({ 'variants.noOfProducts': { $gt: 0 } });
+        products = products.find({ 'variants.noOfProducts': { $gt: 0 } });
     }
     const page = Number(body.page) || 1;
     const limit = Number(body.limit) || 24;
     const skip = (page - 1) * limit;
     products = products.skip(skip).limit(limit);
-    const filterProduct = await products;
-    return filterProduct;
-  }
+    const filterProducts = await products;
+    const productData = {
+        filterProducts,
+        totalProducts
+    }
+    return productData;
+}
 
   async GetOneProduct(productId) {
     try {
