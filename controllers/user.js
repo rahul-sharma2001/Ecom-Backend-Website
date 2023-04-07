@@ -2,6 +2,8 @@ const UserService = require('../services/user');
 const userModel = require('../model/user');
 const bcrypt = require('bcrypt');
 const user = require('../model/user');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 let userService = new UserService();
@@ -28,14 +30,14 @@ const createUser = async (req, res) => {
         .json({ status: true, message: 'Seller created successfully!' });
     }
   } catch (error) {
-    res.status(500).json({ status: false, message: error.message, data: user });
+    res.status(404).json({ status: false, message: error.message });
   }
 };
 
 const getUser = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    const user = await userService.getUser({ _id: userId });
+    const user = await userService.getUser(userId);
     if (!user) {
       return res
         .status(404)

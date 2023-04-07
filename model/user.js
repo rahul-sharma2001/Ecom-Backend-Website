@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// import mongoose from 'mongoose';
 
 const { isEmail, isStrongPassword } = require('validator');
 
@@ -25,8 +26,8 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'must provide password'],
-    validate: [isStrongPassword, 'provide strong password']
+    required: [true, 'must provide password']
+    //validate: [isStrongPassword, 'provide strong password']
   },
   contactNumber: {
     type: String,
@@ -39,12 +40,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     enum: ['user', 'admin', 'seller'],
-    required:[true,"must provide role"]
+    required: [true, 'must provide role']
   },
-  cartProductsInTempId:{  
+  cartProductsInTempId: {
     type: mongoose.Schema.Types.ObjectId,
-    default: null 
-  } 
+    default: null
+  }
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -3,6 +3,8 @@ const { ObjectId } = require('mongodb');
 
 const CartService = require('../services/cart');
 const cartService = new CartService();
+const uuid = require('uuid');
+const { ObjectId } = require('mongodb');
 
 async function createCart(req, res) {
   try {
@@ -145,7 +147,7 @@ async function handleBuyNow(req, res) {
   const { userId: userId } = req.params;
   const { tempId: tempId } = req.params;
 
-  try { 
+  try {
     const compareCartData = await cartService.compareCartData(
       { _id: userId },
       { tempId: tempId }
@@ -162,8 +164,6 @@ async function handleBuyNow(req, res) {
   }
 }
 
-
-
 module.exports = {
   createCart,
   getCart,
@@ -172,5 +172,5 @@ module.exports = {
   deleteProduct,
   addProduct,
   createTemporaryUserId,
-  handleBuyNow,
+  handleBuyNow
 };

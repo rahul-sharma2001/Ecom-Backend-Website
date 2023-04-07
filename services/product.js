@@ -14,8 +14,7 @@ class ProductService {
     }
 
     async GetAllProduct(body) {
-        const { name, sort, fields, gender, category, brand, maxPrice, minPrice, color, availability, sellerId, search, isAdminSide = 'false' } = body;
-
+        const { name, sort, fields, Gender,Size, category, Brand, max, min, Color, Available, sellerId, search, isAdminSide = 'false' } = body;
         const conditions = [];
         if (search) {
             conditions.push(
@@ -33,7 +32,6 @@ class ProductService {
             brand: 1,
             productDetails: 1,
             category: 1,
-            variants: 1,
         }
         const matchQuery = {}
 
@@ -44,16 +42,59 @@ class ProductService {
             project['variant'] = '$variants'
         }
         else {
-            matchQuery['variants']= { $gt: 0 };
+            project['variants'] = 1
+            // matchQuery['variants'] = { $gt: 0 };
         }
-        
-        if (sellerId) {
-            matchQuery['sellerId']= sellerId;
 
-            pipeline.push({
-                $match: matchQuery
-            })
+        if (sellerId) {
+            matchQuery['sellerId'] = sellerId;
+
+            
         }
+
+        if(Brand) {
+            const b=Brand.split(",")
+          console.log(typeof(b))
+          matchQuery['brand'] = {$in:b};
+       
+        }
+       
+        if(Color) {
+            const c=Color.split(",")
+          console.log(c)
+          matchQuery['variants.color'] = {$in:c};
+          console.log(matchQuery)
+        }
+
+        if(Size) {
+            const s=Size.split(",")
+          console.log(typeof(s))
+          matchQuery['variants.size'] = {$in:s};
+       
+        }
+
+        if(Gender) {
+          console.log(Gender)
+          const regex = new RegExp(`^\\/${Gender}`);
+          console.log(regex)
+          matchQuery['category'] = regex;
+console.log(matchQuery)
+        }
+
+        if(min && max) {
+          console.log(min,max)
+          matchQuery['variants.price'] = {$gte:Number(min),$lte:Number(max)};
+       console.log(matchQuery)
+        }
+        if(Available) {
+            console.log(Available)
+            matchQuery[ 'variants.noOfProducts'] = {$gt:Number(0)};
+         console.log(matchQuery)
+          }
+
+        pipeline.push({
+            $match: matchQuery
+        })
 
         if (conditions.length > 0) {
             pipeline.push({
@@ -71,6 +112,7 @@ class ProductService {
         const totalProducts = (await products).length;
 
         if (sort) {
+            console.log(sort)
             const sortList = sort.split(',').join(' ');
             products = products.sort(sortList);
         }
@@ -78,12 +120,39 @@ class ProductService {
             const fieldList = fields.split(',').join(' ');
             products = products.select(fieldList);
         }
-        if (maxPrice || minPrice) {
-
-        }
-        if (availability) {
-            products = products.find({ 'variants.noOfProducts': { $gt: 0 } });
-        }
+        // if (availability) {
+        //     products = products.find({ 'variants.noOfProducts': { $gte: 0 } });
+        // }
+        // if (brand) {
+        //     const b=brand.split(",").join(' ')
+        //     console.log(b)
+        //     // console.log(Object.values(await products))
+           
+        //     Object.values(await products).filter((product,index)=>{
+        //         if(b.includes(product.brand)){
+        //             console.log("product",product)
+        //         }
+        //     })
+        //     // products = products.find({ 'brand': { $regex: new RegExp(brand.split(',').join('|'), 'i') } });
+    // }
+        // if (gender) {
+        //     console.log(gender)
+        //     const regex = new RegExp(`^\\/${gender}`);
+        //     console.log(regex)
+        //     products = products.find({'category': regex })
+        // }
+        // if (color) {
+        //     console.log(color)
+        //     products = products.find({ 'variants.color': { $regex: new RegExp(color.split(',').join('|'), 'i') } });
+        // }
+        // if (size) {
+        //     console.log(size)
+        //     products = products.find({ 'variants.size': { $regex: new RegExp(size.split(',').join('|'), 'i') } });
+        // }
+        // if (max && min) {
+        //     console.log(max,min)
+        //     products = products.find().where('variants.price').gte(min).lte(max);
+        // }
         const page = Number(body.page) || 1;
         const limit = Number(body.limit) || 24;
         const skip = (page - 1) * limit;
@@ -132,9 +201,9 @@ class ProductService {
                 { $pull: { variants: { _id: variantId } } }
             );
 
-            if(deleteVariant && deleteVariant.variants.length < 2) {
+            if (deleteVariant && deleteVariant.variants.length < 2) {
                 await this.DeleteProduct(productId);
-            } 
+            }
         } catch (error) {
             throw error;
         }
