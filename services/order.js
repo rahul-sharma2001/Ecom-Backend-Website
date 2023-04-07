@@ -100,10 +100,12 @@ class OrderService {
       status,
       sellerId,
       limit = 20,
-      offset = 0
+      offset = 0,
+      search
     } = queryObject;
     limit = (+limit)
     offset = (+offset)
+    
     if (userId) {
       filterObj['user.userId'] =mongoose.Types.ObjectId(userId);
     }
@@ -116,6 +118,7 @@ class OrderService {
     if (status) {
       filterObj['status'] = status;
     }
+
     if (sellerId) {
       filterObj['products.sellerId'] =sellerId
 
@@ -127,9 +130,8 @@ class OrderService {
         $project: { totalAmount: 0 }
       });
     }
-
     pipeline.push({
-      $match: filterObj
+      $match: {$and:[filterObj,{_Id:{$regex:search,$options:"i"}}]}
     });
 
     if(filterObj.status !== 'deleted'){
@@ -138,12 +140,13 @@ class OrderService {
       });
     }
  
-
+    let filterOrders = await orderModel.aggregate(pipeline);
+    let count = filterOrders.length;
     let filterOrder = await orderModel
       .aggregate(pipeline)
       .skip(offset)
       .limit(limit);
-    return filterOrder;
+    return [filterOrder,count];
   }
   async getCounter() {
     try {

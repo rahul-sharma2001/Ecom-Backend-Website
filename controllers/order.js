@@ -86,11 +86,11 @@ const filterOrder = async (req,res)=>{
   try{
   
     let queryObject = req.query;
-    let filteredOrder = await orderServiceInstance.filterOrder(queryObject);
+    let [filteredOrder,count] = await orderServiceInstance.filterOrder(queryObject);
     if(filteredOrder){
       res.status(200).json({
         message:"Orders filtered Successfully",
-        count:filteredOrder.length,
+        count,
         details :filteredOrder
       })
     }
