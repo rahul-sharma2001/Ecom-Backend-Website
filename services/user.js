@@ -199,7 +199,8 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
-      console.log(loginData.password, LoginUser.password);
+
+      console.log(LoginUser)
       if (!LoginUser) {
         return {
           status: false,
@@ -305,6 +306,21 @@ class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getupdatedId({ userId, cartProductsInTempId }) {
+    console.log(userId, cartProductsInTempId);
+
+    if (!userId || !cartProductsInTempId) {
+      throw new Error('Required fields = userId, cartProductsInTempId');
+    }
+
+    const updatedData = await userModel.findOneAndUpdate(
+       {_id:userId} ,
+      { $set: {  cartProductsInTempId } },
+      { new: true, runValidators: true } 
+    );
+    return updatedData;
   }
 }
 

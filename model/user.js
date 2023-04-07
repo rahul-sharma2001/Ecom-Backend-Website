@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'must provide password'],
+    required: [true, 'must provide password']
     //validate: [isStrongPassword, 'provide strong password']
   },
   contactNumber: {
@@ -38,8 +38,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    required:[true,"must enter role"],
-    enum: ['user', 'admin', 'seller']
+    trim: true,
+    enum: ['user', 'admin', 'seller'],
+    required: [true, 'must provide role']
+  },
+  cartProductsInTempId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
   }
 });
 
