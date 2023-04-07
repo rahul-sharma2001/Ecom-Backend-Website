@@ -15,11 +15,12 @@ let transporter = nodemailer.createTransport({
 });
 class UserService {
   async createUser(userInfo) {
-    const {password}= userInfo;
+    const { password } = userInfo;
     const hashedPassword = await bcrypt.hash(userInfo.password, 10);
     userInfo.password = hashedPassword;
+    console.log(userInfo.password, hashedPassword, 'new');
     try {
-      console.log(userInfo)
+      console.log(userInfo, 'userinfo');
       if (!userInfo) {
         throw new Error('User details is required');
       }
@@ -46,7 +47,11 @@ class UserService {
           };
 
           const savedSeller = await sellerModel.create(newSeller);
-          const token = jwt.sign({ sellerId: savedUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+          const token = jwt.sign(
+            { sellerId: savedUser._id },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1h' }
+          );
           const resetUrl = `http://localhost:3000/set-password/${token}`;
           const mailOptions = {
             from: '19ceusf036@ddu.ac.in',
@@ -59,8 +64,7 @@ class UserService {
         } else {
           throw new Error('Address and Company Name Required');
         }
-      } 
-      else {
+      } else {
         throw new Error('only user or seller or admin can be created');
       }
     } catch (error) {
@@ -107,16 +111,16 @@ class UserService {
     }
   }
 
-  async login(loginData){
+  async login(loginData) {
     try {
       if (!loginData) {
         throw new Error('User details is required');
       }
-      const LoginUser = await userModel.findOne({emailId:loginData.emailId});
-      let modifiedObject = LoginUser
+      const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
+      let modifiedObject = LoginUser;
 
       if (!LoginUser) {
-        return{
+        return {
           status: false,
           message: 'invalid emailId or password'
         };
@@ -125,9 +129,9 @@ class UserService {
           loginData.password,
           LoginUser.password
         );
-        
+
         if (!matchPassword) {
-          return{
+          return {
             status: false,
             message: 'invalid emailId or password'
           };
@@ -136,7 +140,7 @@ class UserService {
             { id: LoginUser._id },
             process.env.JWT_SECRET_KEY
           );
-          modifiedObject.password = null
+          modifiedObject.password = null;
           return {
             status: true,
             message: 'login successfull!',
@@ -195,11 +199,7 @@ class UserService {
         throw new Error('User details is required');
       }
       const LoginUser = await userModel.findOne({ emailId: loginData.emailId });
-<<<<<<< HEAD
-
-=======
-      console.log(LoginUser)
->>>>>>> develop
+      console.log(loginData.password, LoginUser.password);
       if (!LoginUser) {
         return {
           status: false,
@@ -210,7 +210,7 @@ class UserService {
           loginData.password,
           LoginUser.password
         );
-          console.log(matchPassword);
+        console.log(matchPassword);
         if (!matchPassword) {
           return {
             status: false,
@@ -307,5 +307,5 @@ class UserService {
     }
   }
 }
-  
+
 module.exports = UserService;
