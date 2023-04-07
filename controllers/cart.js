@@ -145,13 +145,11 @@ async function handleBuyNow(req, res) {
   const { userId: userId } = req.params;
   const { tempId: tempId } = req.params;
 
-  console.log({ id: userId }, { tempId: tempId });
   try { 
     const compareCartData = await cartService.compareCartData(
       { _id: userId },
       { tempId: tempId }
     );
-    console.log('compareCartData: ', compareCartData);
     res.status(200).json({
       status: true,
       data: compareCartData

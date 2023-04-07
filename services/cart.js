@@ -42,7 +42,6 @@ class CartService {
   }
 
   async getCartData({ userId }) {
-    console.log({ userId });
     if (!userId) {
       throw new Error('userId is required field');
     }
@@ -383,30 +382,20 @@ class CartService {
   }
 
   async compareCartData(id, tempId) {
-    console.log('inside services');
-    console.log(id, tempId);
     const existingUser = await userModel.findOne(id);
-    console.log('exisitingUserData: ', existingUser);
     if (existingUser == null) {
-      console.log('inside  !ExistingUser');
       const data = await Cart.findOne(id).lean(true);
-      // console.log('data from tempId: ', data);
-      return {existingUser:false, data:data};
+      return { existingUser: false, data: data };
     } else {
-      console.log('inside ExistingUser');
-      console.log(
-        'exisitingUserData in else ',
-        existingUser
-      );
-
       const objectId = existingUser.cartProductsInTempId;
       const userIdObject = { userId: objectId.toString() };
-      console.log("userIdObject",userIdObject);
-      
 
       const actualCartData = await Cart.find(userIdObject);
-      console.log(actualCartData);
-      return {existingUser:true, data:actualCartData,exisitingUserData:existingUser}
+      return {
+        existingUser: true,
+        data: actualCartData,
+        exisitingUserData: existingUser
+      };
     }
   }
 }
